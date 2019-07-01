@@ -11,6 +11,15 @@ TSERVDIR = tserv
 TSERVSRC = $(wildcard $(TSERVDIR)/*.c)
 TSERVOBJ = $(patsubst %.c, $(OBJDIR)/%.o, $(TSERVSRC))
 
+# future use
+# TCLIDIR =
+# TCLISRC =
+# TCLIOBJ =
+
+# TDBDIR =
+# TDBSRC = 
+# TDBOBJ =
+
 
 $(OBJDIR)/$(TSERVDIR)/%.o: $(TSERVDIR)/%.c $(OBJDIR) $(OBJDIR)/$(TSERVDIR)
 	$(CC) $(CFLAGS) -I $(INCDIR) -c -o $@ $<
