@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Werror
 
-INCDIR = header
+INCDIR = include 
 OBJDIR = obj
 BINDIR = bin
 
@@ -21,10 +21,10 @@ TSERVOBJ = $(patsubst %.c, $(OBJDIR)/%.o, $(TSERVSRC))
 # TDBOBJ =
 
 
-$(OBJDIR)/$(TSERVDIR)/%.o: $(TSERVDIR)/%.c $(OBJDIR) $(OBJDIR)/$(TSERVDIR)
+$(OBJDIR)/$(TSERVDIR)/%.o: $(TSERVDIR)/%.c $(OBJDIR) $(OBJDIR)/$(TSERVDIR) 
 	$(CC) $(CFLAGS) -I $(INCDIR) -c -o $@ $<
 
-tserv: $(TSERVOBJ) $(BINDIR)
+tserv: $(TSERVOBJ) $(BINDIR) 
 	$(CC) $(CFLAGS) -I $(INCDIR) -o $(BINDIR)/$(BINNAME) $(TSERVOBJ)
 
 $(OBJDIR):
@@ -35,6 +35,8 @@ $(OBJDIR)/$(TSERVDIR):
 
 $(BINDIR):
 	mkdir $(BINDIR)
+
+all: tserv
 
 clean:
 	rm -fr $(OBJDIR) $(BINDIR) 

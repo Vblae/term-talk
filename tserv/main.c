@@ -1,6 +1,7 @@
-#include <stdio.h>
+#include <stdio.h> 
+#include "tserv/default.h"
 
 int main(int argc, char** argv) {
-  printf("Makefile test...\n");
+  printf("defaults:\n  ip: %s\n  port: %d\n", DEFAULT_ADDR, DEFAULT_PORT);
   return 0;
 }
