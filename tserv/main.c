@@ -1,7 +1,10 @@
 #include <stdio.h> 
 #include "tserv/default.h"
+#include "tserv/config.h"
 
 int main(int argc, char** argv) {
-  printf("defaults:\n  ip: %s\n  port: %d\n", DEFAULT_ADDR, DEFAULT_PORT);
+
+  config_s* conf = load_config(argv[1]);
+  printf("p: %p\n", conf);
   return 0;
 }
