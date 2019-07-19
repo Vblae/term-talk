@@ -8,9 +8,8 @@
 
 static int __find_char(char* buff, char c, size_t buff_len);
 
-static size_t __find_line_len(char* buff, size_t buff_len);
-
 static void __shift_buff_left(char* buff, int start_index, int shift_amnt, size_t buff_len);
+
 config_s* create_config() {
   config_s* conf = (config_s*) malloc(sizeof(config_s));
   conf->vars = 0;
@@ -135,14 +134,6 @@ static int __find_char(char* buff, char c, size_t buff_len) {
     return c_index;
   
   return -1;
-}
-
-static size_t __find_line_len(char* buff, size_t buff_len) {
-  int index = __find_char(buff, '\n', buff_len);
-  if(index < 0)
-    return buff_len;
-
-  return index + 1;
 }
 
 static void __shift_buff_left(char* buff, int start_index, int shift_amnt, size_t buff_len) {
