@@ -6,6 +6,8 @@
 
 #include "config/config.h"
 
+static int __parse_line(config_s* conf, char* line, size_t line_len);
+
 static int __find_char(char* buff, char c, size_t buff_len);
 
 static void __shift_buff_left(char* buff, int start_index, int shift_amnt, size_t buff_len);
@@ -91,8 +93,7 @@ config_s* load_config(char* config_file_path) {
         memcpy(line, &buff[buff_offset], line_len);
         line[nl_index] = 0;
 
-        config_var_s* conf_var = __create_config_var(line);
-        __add_config_var(conf, conf_var);
+        __parse_line(conf, line, line_len);
 
         buff_offset += line_len;
         line_num++;
@@ -115,8 +116,7 @@ config_s* load_config(char* config_file_path) {
         memcpy(line, &buff[buff_offset], bytes_read);
         line[bytes_read] = 0;
 
-        config_var_s* conf_var = __create_config_var(line);
-        __add_config_var(conf, conf_var);
+        __parse_line(conf, line, bytes_read);
 
         buff_offset += bytes_read;
         line_num++;
@@ -134,6 +134,13 @@ config_s* load_config(char* config_file_path) {
   }
 
   return conf;
+}
+
+static int __parse_line(config_s* conf, char* line, size_t line_len) {
+  // do an actual parse
+  config_var_s* conf_var = __create_config_var(line);
+  __add_config_var(conf, conf_var);
+  return 1;
 }
 
 static int __find_char(char* buff, char c, size_t buff_len) {
