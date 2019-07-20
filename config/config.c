@@ -80,6 +80,8 @@ config_s* load_config(char* config_file_path) {
         if(nl_index == 0 && buff_offset < buff_len) {
           buff_offset++;
           line_num++;
+
+          atleast_one_line = 1;
           continue;
         }
 
@@ -93,14 +95,33 @@ config_s* load_config(char* config_file_path) {
         __add_config_var(conf, conf_var);
 
         buff_offset += line_len;
-        atleast_one_line = 1;
         line_num++;
+
+        atleast_one_line = 1;
       }
       
+      char check = 0;
+      size_t check_read = 0;
+
       // line is to long
-      if(!atleast_one_line) 
+      if(!atleast_one_line && (check_read = read(fd, &check, 1)) == 1) {
         printf("line %d: error: Line is too long\n", line_num);
-      
+        return conf;
+      }
+
+      if(!atleast_one_line && !check_read) {
+        char line[bytes_read];
+
+        memcpy(line, &buff[buff_offset], bytes_read);
+        line[bytes_read] = 0;
+
+        config_var_s* conf_var = __create_config_var(line);
+        __add_config_var(conf, conf_var);
+
+        buff_offset += bytes_read;
+        line_num++;
+      }
+
       size_t bytes_left = bytes_read + bytes_overflowed - buff_offset;
       bytes_overflowed = bytes_left;
 
