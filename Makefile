@@ -5,8 +5,7 @@ INCDIR = include
 OBJDIR = obj
 BINDIR = bin
 
-BINNAME = tserv
-
+TSERV = tserv 
 TSERVDIR = tserv
 TSERVSRC = $(wildcard $(TSERVDIR)/*.c)
 TSERVOBJ = $(patsubst %.c, $(OBJDIR)/%.o, $(TSERVSRC))
@@ -20,12 +19,20 @@ TSERVOBJ = $(patsubst %.c, $(OBJDIR)/%.o, $(TSERVSRC))
 # TDBSRC = 
 # TDBOBJ =
 
+CONFDIR = config
+CONFSRC = $(wildcard $(CONFDIR)/*.c)
+CONFOBJ = $(patsubst %.c, $(OBJDIR)/%.o, $(CONFSRC))
 
 $(OBJDIR)/$(TSERVDIR)/%.o: $(TSERVDIR)/%.c $(OBJDIR) $(OBJDIR)/$(TSERVDIR) 
 	$(CC) $(CFLAGS) -I $(INCDIR) -c -o $@ $<
 
-tserv: $(TSERVOBJ) $(BINDIR) 
-	$(CC) $(CFLAGS) -I $(INCDIR) -o $(BINDIR)/$(BINNAME) $(TSERVOBJ)
+$(OBJDIR)/$(CONFDIR)/%.o: $(CONFDIR)/%.c $(OBJDIR) $(OBJDIR)/$(CONFDIR) 
+	$(CC) $(CFLAGS) -I $(INCDIR) -c -o $@ $<
+
+tserv: $(CONFOBJ) $(TSERVOBJ) $(BINDIR)
+	$(CC) $(CFLAGS) -I $(INCDIR) -o $(BINDIR)/$(TSERV) $(TSERVOBJ) $(CONFOBJ)
+
+config: $(CONFOBJ) $(OBJDIR)/$(CONFDIR)
 
 $(OBJDIR):
 	mkdir $(OBJDIR)
@@ -33,10 +40,13 @@ $(OBJDIR):
 $(OBJDIR)/$(TSERVDIR):
 	mkdir $(OBJDIR)/$(TSERVDIR)
 
+$(OBJDIR)/$(CONFDIR):
+	mkdir $(OBJDIR)/$(CONFDIR)
+
 $(BINDIR):
 	mkdir $(BINDIR)
 
-all: tserv
+all: config tserv
 
 clean:
 	rm -fr $(OBJDIR) $(BINDIR) 

@@ -1,6 +1,6 @@
 #include <stdio.h> 
 #include "tserv/default.h"
-#include "tserv/config.h"
+#include "config/config.h"
 
 int main(int argc, char** argv) {
 

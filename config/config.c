@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "tserv/config.h"
+#include "config/config.h"
 
 static int __find_char(char* buff, char c, size_t buff_len);
 
