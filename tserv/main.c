@@ -9,7 +9,7 @@ int main(int argc, char** argv) {
   config_s* conf = load_config(argv[1]);
   printf("p: %p\n", conf);
 
-  vector_s* vector = vector_int_create(0);
+  vector_s* vector = vector_of_int_create(0);
 
   for(int i = 0; i < 10; i++) {
     vector_push(vector, &i);

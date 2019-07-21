@@ -34,7 +34,13 @@ vector_s* vector_create(
   vector_item_comparator_f comparator_funct
 );
 
-vector_s* vector_int_create(size_t reserve);
+vector_s* vector_of_byte_create(size_t reserve);
+
+vector_s* vector_of_short_create(size_t reserve);
+
+vector_s* vector_of_int_create(size_t reserve);
+
+vector_s* vector_of_long_create(size_t reserve);
 
 void vector_free(vector_s* vector);
 

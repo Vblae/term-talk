@@ -25,10 +25,21 @@ static void __vector_default_deallocator(void* item) {
 
 }
 
+static int __vector_byte_comparator(void* item1, void* item2) {
+  return *((char*) item1) - *((char*) item2);
+}
+
+static int __vector_short_comparator(void* item1, void* item2) {
+  return *((short*) item1) - *((short*) item2);
+}
+
 static int __vector_int_comparator(void* item1, void* item2) {
   return *((int*) item1) - *((int*) item2);
 }
 
+static int __vector_long_comparator(void* item1, void* item2) {
+  return *((long*) item1) - *((int*) item2);
+}
 
 
 int __vector_undo_double_capacity(
@@ -143,11 +154,41 @@ vector_s* vector_create(
   );
 }
 
-vector_s* vector_int_create(size_t reserve) {
+vector_s* vector_of_byte_create(size_t reserve) {
+  return vector_create_with_allocators(
+    reserve,
+    sizeof(char),
+    &__vector_byte_comparator,
+    &__vector_default_allocator,
+    &__vector_default_deallocator
+  );
+}
+
+vector_s* vector_of_short_create(size_t reserve) {
+  return vector_create_with_allocators(
+    reserve,
+    sizeof(short),
+    &__vector_short_comparator,
+    &__vector_default_allocator,
+    &__vector_default_deallocator
+  );
+}
+
+vector_s* vector_of_int_create(size_t reserve) {
   return vector_create_with_allocators(
     reserve,
     sizeof(int),
     &__vector_int_comparator,
+    &__vector_default_allocator,
+    &__vector_default_deallocator
+  );
+}
+
+vector_s* vector_of_long_create(size_t reserve) {
+  return vector_create_with_allocators(
+    reserve,
+    sizeof(long),
+    &__vector_long_comparator,
     &__vector_default_allocator,
     &__vector_default_deallocator
   );
