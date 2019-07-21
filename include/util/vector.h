@@ -42,6 +42,14 @@ vector_s* vector_of_int_create(size_t reserve);
 
 vector_s* vector_of_long_create(size_t reserve);
 
+vector_s* vector_of_pointer_create(size_t reserve);
+
+vector_s* vector_of_float_create(size_t reserve);
+
+vector_s* vector_of_double_create(size_t reserve);
+
+vector_s* vector_of_string_create(size_t reserve);
+
 void vector_free(vector_s* vector);
 
 int vector_push(vector_s* vector, void* item);

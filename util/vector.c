@@ -25,6 +25,28 @@ static void __vector_default_deallocator(void* item) {
 
 }
 
+static int __vector_string_allocator(void* item) {
+  char** ptr = (char**) item;
+  char* original_string = *ptr;
+  if(!original_string)
+    return 1;
+  
+  size_t string_len = strlen(original_string);
+  char* new_string = malloc(string_len);
+  memcpy(new_string, original_string, string_len + 1);
+
+  *ptr = new_string;
+  return 1;
+}
+
+static void __vector_string_deallocator(void* item) {
+  char** ptr = (char**) item;
+  if(!(*ptr))
+    return;
+
+  free(*ptr);
+}
+
 static int __vector_byte_comparator(void* item1, void* item2) {
   return *((char*) item1) - *((char*) item2);
 }
@@ -51,6 +73,10 @@ static int __vector_double_comparator(void* item1, void* item2) {
 
 static int __vector_pointer_comparator(void* item1, void* item2) {
   return item1 - item2;
+}
+
+static int __vector_string_comparator(void* item1, void* item2) {
+  return strcmp(*((char**) item1), *((char**) item2));
 }
 
 int __vector_undo_double_capacity(
@@ -232,6 +258,16 @@ vector_s* vector_of_double_create(size_t reserve) {
     &__vector_double_comparator,
     &__vector_default_allocator,
     &__vector_default_deallocator
+  );
+}
+
+vector_s* vector_of_string_create(size_t reserve) {
+  return vector_create_with_allocators(
+    reserve,
+    sizeof(char*),
+    &__vector_string_comparator,
+    &__vector_string_allocator,
+    &__vector_string_deallocator
   );
 }
 
