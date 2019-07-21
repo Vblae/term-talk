@@ -1,14 +1,13 @@
+byte test_byte: 10
+short port: 56000
 
+int test_int: 78
+long test_long: 2000
 
-012345678
-1
+float test_float: 78.123
+double test_double: .3
 
-123
+char test_char: 'c'
+string ip_address: '127.0.0.1'
 
-123
-123456789
-1234
-
-
-123456789
-1234567
+string test_string: 'This whole thing is the test string'
