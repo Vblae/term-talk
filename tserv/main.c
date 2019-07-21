@@ -13,19 +13,21 @@ int main(int argc, char** argv) {
   char* test[] = {
     "str 1",
     "str 2",
+    (char*) 0,
     "str 3"
   };
-  for(int i = 0; i < 3; i++) {
+  for(int i = 0; i < 4; i++) {
     vector_push(vector, &test[i]);
   }
 
   for(int i = 0; i < vector->len; i++) {
     char** val = (char**) vector_get(vector, i);
-    (*val)[0] = 'T';
     printf("og:%p->%s new:%p->%s\n", test[i], test[i], *val, *val);
   }
 
-  printf("\n");
+  printf("top: %s\n", *((char**) vector_top(vector)));
+  vector_pop(vector);
+  printf("top: %s\n", *((char**) vector_top(vector)));
   vector_free(vector);
   return 0;
 }

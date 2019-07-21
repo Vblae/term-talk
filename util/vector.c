@@ -318,6 +318,39 @@ int vector_push(vector_s* vector, void* item) {
   return success;
 }
 
+int vector_pop(vector_s* vector) {
+  if(!vector) {
+    printf("error: vector: cannot pop from a null vector\n");
+    return 0;
+  }
+
+  if(vector->len == 0)
+    return 0;
+
+  vector_wrapper_s* vector_wrapper = (vector_wrapper_s*) vector;
+  memset(
+    &vector_wrapper->__data_block[(vector->len - 1) * vector_wrapper->__item_size],
+    0,
+    vector_wrapper->__item_size
+  );
+  
+  vector->len--;
+  return 1;
+}
+
+void* vector_top(vector_s* vector) {
+  if(!vector) {
+    printf("error: vector: cannot get top from a null vector\n");
+    return 0;
+  }
+
+  if(vector->len == 0)
+    return 0;
+
+  vector_wrapper_s* vector_wrapper = (vector_wrapper_s*) vector;
+  return &vector_wrapper->__data_block[(vector->len - 1) * vector_wrapper->__item_size];
+}
+
 void* vector_get(vector_s* vector, int idx) {
   if(!vector)
     return 0;
