@@ -1,15 +1,6 @@
 #ifndef __TSERV_CONFIG__
 #define __TSERV_CONFIG__
 
-#define BYTE_VAR 0x10
-#define INT_VAR 0x20
-#define SHORT_VAR 0x30
-#define LONG_VAR 0x40
-#define FLOAT_VAR 0x50
-#define DOUBLE_VAR 0x60
-#define CHAR_VAR 0x70
-#define STRING_VAR 0x80
-
 #define MAX_VAL_LEN 255
 #define MAX_VAR_LEN 255
 

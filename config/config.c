@@ -8,11 +8,16 @@
 #include "config/config.h"
 #include "config/parse.h"
 
-#define BUFF_LEN 100
+#define BUFF_LEN 1024
 
 static int __find_char(char* buff, char c, size_t buff_len);
 
-static void __shift_buff_left(char* buff, int start_index, int shift_amnt, size_t buff_len);
+static void __shift_buff_left(
+  char* buff,
+  int start_index,
+  int shift_amnt,
+  size_t buff_len
+);
 
 config_s* create_config() {
   config_s* conf = (config_s*) malloc(sizeof(config_s));
@@ -112,13 +117,15 @@ config_s* load_config(char* config_file_path) {
     while((bytes_read = read(fd, &buff[buff_offset], expected_bytes_read)) > 0) {
       if(bytes_read < expected_bytes_read)
         buff_len = bytes_read + bytes_overflowed;
-
+      
+      
       buff_offset = 0;
       int nl_index = 0;
       int saw_nl = 0;
-      while((nl_index = __find_char(&buff[buff_offset], '\n', buff_len - buff_offset)) != -1) {
+      while(
+        (nl_index = __find_char(&buff[buff_offset], '\n', buff_len - buff_offset)) != -1
+      ) {
         saw_nl = 1;
-
         if(nl_index == 0) {
           buff_offset++;
           line_num++;
@@ -132,10 +139,15 @@ config_s* load_config(char* config_file_path) {
         parse_result_s parse_res;
         parse_line(line, nl_index, &parse_res);
         
-        //if(parse_res.success && parse_res.var_type != NONE_VAR) {
-        //config_var_s* conf_var = __create_config_var(parse_res.var_name, parse_res.var_data, parse_res.var_type);
-        //__add_config_var(conf, conf_var);
-        //}
+        if(parse_res.success && parse_res.var_type != NONE_VAR) {
+          config_var_s* conf_var = __create_config_var(
+            parse_res.var_name,
+            parse_res.var_data,
+            parse_res.var_type
+          );
+
+          __add_config_var(conf, conf_var);
+        }
 
         buff_offset += nl_index + 1;
         line_num++;
@@ -151,10 +163,14 @@ config_s* load_config(char* config_file_path) {
         parse_result_s parse_res;
         parse_line(line, bytes_overflowed + bytes_read, &parse_res);
         
-        //if(parse_res.success && parse_res.var_type != NONE_VAR) {
-        //config_var_s* conf_var = __create_config_var(parse_res.var_name, parse_res.var_data, parse_res.var_type);
-        //__add_config_var(conf, conf_var);
-        //}
+        if(parse_res.success && parse_res.var_type != NONE_VAR) {
+          config_var_s* conf_var = __create_config_var(
+            parse_res.var_name,
+            parse_res.var_data,
+            parse_res.var_type
+          );
+          __add_config_var(conf, conf_var);
+        }
         
         return conf;
       }
@@ -173,10 +189,14 @@ config_s* load_config(char* config_file_path) {
         parse_result_s parse_res;
         parse_line(line, bytes_overflowed + bytes_read, &parse_res);
         
-        //if(parse_res.success && parse_res.var_type != NONE_VAR) {
-        //config_var_s* conf_var = __create_config_var(parse_res.var_name, parse_res.var_data, parse_res.var_type);
-        //__add_config_var(conf, conf_var);
-        //}
+        if(parse_res.success && parse_res.var_type != NONE_VAR) {
+          config_var_s* conf_var = __create_config_var(
+            parse_res.var_name,
+            parse_res.var_data,
+            parse_res.var_type
+          );
+          __add_config_var(conf, conf_var);
+        }
         
         buff_offset += bytes_overflowed + bytes_read; 
         lseek(fd, -1, SEEK_CUR);
@@ -189,10 +209,14 @@ config_s* load_config(char* config_file_path) {
           parse_result_s parse_res;
           parse_line(line, buff_len - buff_offset, &parse_res);
 
-          //if(parse_res.success && parse_res.var_type != NONE_VAR) {
-          //config_var_s* conf_var = __create_config_var(parse_res.var_name, parse_res.var_data, parse_res.var_type);
-          //__add_config_var(conf, conf_var);
-          //}
+          if(parse_res.success && parse_res.var_type != NONE_VAR) {
+            config_var_s* conf_var = __create_config_var(
+              parse_res.var_name,
+              parse_res.var_data,
+              parse_res.var_type
+            );
+            __add_config_var(conf, conf_var);
+          }
           return conf;
         }
         
@@ -234,7 +258,12 @@ static int __find_char(char* buff, char c, size_t buff_len) {
   return -1;
 }
 
-static void __shift_buff_left(char* buff, int start_index, int shift_amnt, size_t buff_len) {
+static void __shift_buff_left(
+  char* buff,
+  int start_index,
+  int shift_amnt,
+  size_t buff_len
+) {
   if(shift_amnt >= buff_len) {
     memset(buff, 0, buff_len);
     return;
