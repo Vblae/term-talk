@@ -49,6 +49,10 @@ static int __vector_double_comparator(void* item1, void* item2) {
   return *((double*) item1) - *((double*) item2);
 }
 
+static int __vector_pointer_comparator(void* item1, void* item2) {
+  return item1 - item2;
+}
+
 int __vector_undo_double_capacity(
   vector_wrapper_s* vector,
   size_t num_allocated,
@@ -196,6 +200,16 @@ vector_s* vector_of_long_create(size_t reserve) {
     reserve,
     sizeof(long),
     &__vector_long_comparator,
+    &__vector_default_allocator,
+    &__vector_default_deallocator
+  );
+}
+
+vector_s* vector_of_pointer_create(size_t reserve) {
+  return vector_create_with_allocators(
+    reserve,
+    sizeof(void*),
+    &__vector_pointer_comparator,
     &__vector_default_allocator,
     &__vector_default_deallocator
   );
