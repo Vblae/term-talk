@@ -25,29 +25,6 @@ static void __vector_default_deallocator(void* item) {
 
 }
 
-static int __vector_string_allocator(void* item) {
-  char** ptr = (char**) item;
-  char* original_string = *ptr;
-  if(!original_string)
-    return 1;
-  
-  size_t string_len = strlen(original_string);
-  char* new_string = malloc(string_len + 1);
-  memcpy(new_string, original_string, string_len + 1);
-  new_string[string_len] = 0;
-
-  *ptr = new_string;
-  return 1;
-}
-
-static void __vector_string_deallocator(void* item) {
-  char** ptr = (char**) item;
-  if(!(*ptr))
-    return;
-
-  free(*ptr);
-}
-
 static int __vector_byte_comparator(void* item1, void* item2) {
   return *((char*) item1) - *((char*) item2);
 }
@@ -244,8 +221,8 @@ vector_s* vector_of_string_create(size_t reserve) {
     reserve,
     sizeof(char*),
     &__vector_string_comparator,
-    &__vector_string_allocator,
-    &__vector_string_deallocator
+    &__vector_default_allocator,
+    &__vector_default_deallocator
   );
 }
 
