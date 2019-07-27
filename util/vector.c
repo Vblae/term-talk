@@ -32,8 +32,9 @@ static int __vector_string_allocator(void* item) {
     return 1;
   
   size_t string_len = strlen(original_string);
-  char* new_string = malloc(string_len);
+  char* new_string = malloc(string_len + 1);
   memcpy(new_string, original_string, string_len + 1);
+  new_string[string_len] = 0;
 
   *ptr = new_string;
   return 1;
@@ -76,23 +77,16 @@ static int __vector_pointer_comparator(void* item1, void* item2) {
 }
 
 static int __vector_string_comparator(void* item1, void* item2) {
+  if(!*((char**) item1) && !*((char**) item2))
+      return 0;
+
+  if(!*((char**) item1))
+    return 1;
+
+  if(!*((char**) item2))
+    return -1;
+
   return strcmp(*((char**) item1), *((char**) item2));
-}
-
-int __vector_undo_double_capacity(
-  vector_wrapper_s* vector,
-  size_t num_allocated,
-  void* new_data_block
-) {
-  if(num_allocated == 0)
-    return 0;
-
-  for(int i = 0; i < num_allocated; i++) {
-    vector->__deallocator_funct(&new_data_block[i * vector->__item_size]);
-  }
-
-  free(new_data_block);
-  return 0;
 }
 
 int __vector_double_capacity(vector_wrapper_s* vector) {
@@ -100,24 +94,8 @@ int __vector_double_capacity(vector_wrapper_s* vector) {
   void* old_data_block = vector->__data_block;
   if(!new_data_block)
     return 0;
-  
-  int success = 1;
-  size_t num_allocated = 0;
-  for(int i = 0; i < vector->vec.len; i++) {
-    void* new_item_spot = &new_data_block[i * vector->__item_size];
-    void* old_item_spot = &old_data_block[i * vector->__item_size];
 
-    memcpy(new_item_spot, old_item_spot, vector->__item_size);
-    success = vector->__allocator_funct(new_item_spot);
-    if(!success)
-      break;
-
-    num_allocated++;
-  }
-
-  if(!success)
-    return __vector_undo_double_capacity(vector, num_allocated, new_data_block);
-  
+  memcpy(new_data_block, old_data_block, vector->vec.len * vector->__item_size);
   vector->__data_block = new_data_block;
   vector->vec.cap *= 2;
 
@@ -126,7 +104,7 @@ int __vector_double_capacity(vector_wrapper_s* vector) {
   }
 
   free(old_data_block);
-  return success;
+  return 1;
 }
 
 vector_s* vector_create_with_allocators(
@@ -360,5 +338,19 @@ void* vector_get(vector_s* vector, int idx) {
 
   vector_wrapper_s* vector_wrapper = (vector_wrapper_s*) vector;
   return &vector_wrapper->__data_block[idx * vector_wrapper->__item_size];
+}
+
+int vector_find(vector_s* vector, void* val) {
+  if(!vector || !val)
+    return -1;
+  
+  vector_wrapper_s* vector_wrapper = (vector_wrapper_s*) vector;
+  for(int i = 0; i < vector->len; i++) {
+    void* other = &vector_wrapper->__data_block[i * vector_wrapper->__item_size];
+    if(vector_wrapper->__comparator_funct(val, other) == 0)
+      return i;
+  }
+
+  return -1;
 }
 

@@ -28,6 +28,10 @@ int main(int argc, char** argv) {
   printf("top: %s\n", *((char**) vector_top(vector)));
   vector_pop(vector);
   printf("top: %s\n", *((char**) vector_top(vector)));
+  
+  char** str = &test[1];
+  int idx = vector_find(vector, str);
+  printf("idx: %d\n", idx);
   vector_free(vector);
   return 0;
 }

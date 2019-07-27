@@ -56,9 +56,11 @@ int vector_push(vector_s* vector, void* item);
 
 int vector_pop(vector_s* vector);
 
+void* vector_top(vector_s* vector);
+
 void* vector_get(vector_s* vector, int idx);
 
-void* vector_top(vector_s* vector);
+int vector_find(vector_s* vector, void* val);
 
 #endif
 
