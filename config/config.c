@@ -7,6 +7,7 @@
 
 #include "config/config.h"
 #include "config/parse.h"
+#include "util/vector.h"
 
 #define BUFF_LEN 1024
 
@@ -45,7 +46,6 @@ config_var_s* __create_config_var(char* name, void* data, data_type_t type) {
 
   switch(type) {
     case BYTE_VAR:
-    case CHAR_VAR:
       conf_var->byte_val = *((char*) data);
      break;
     case SHORT_VAR:
@@ -102,7 +102,6 @@ config_s* load_config(char* config_file_path) {
     return 0;
   }
   
-
   size_t buff_len = BUFF_LEN;
   char buff[buff_len];
   memset(&buff, 0, buff_len);
@@ -110,6 +109,7 @@ config_s* load_config(char* config_file_path) {
   int line_num = 1;
   size_t buff_offset = 0;
   config_s* conf = create_config();
+  vector_s* vector_for_parse = vector_of_string_create(5);
   while(1) {
     size_t bytes_read = 0;
     size_t bytes_overflowed = 0;
@@ -117,7 +117,6 @@ config_s* load_config(char* config_file_path) {
     while((bytes_read = read(fd, &buff[buff_offset], expected_bytes_read)) > 0) {
       if(bytes_read < expected_bytes_read)
         buff_len = bytes_read + bytes_overflowed;
-      
       
       buff_offset = 0;
       int nl_index = 0;
@@ -135,9 +134,9 @@ config_s* load_config(char* config_file_path) {
         char line[nl_index + 1];
         memcpy(line, &buff[buff_offset], nl_index);
         line[nl_index] = 0;
-
+        
         parse_result_s parse_res;
-        parse_line(line, nl_index, &parse_res);
+        parse_line(line, nl_index, &parse_res, vector_for_parse);
         
         if(parse_res.success && parse_res.var_type != NONE_VAR) {
           config_var_s* conf_var = __create_config_var(
@@ -161,7 +160,7 @@ config_s* load_config(char* config_file_path) {
         line[bytes_overflowed + bytes_read] = 0;
 
         parse_result_s parse_res;
-        parse_line(line, bytes_overflowed + bytes_read, &parse_res);
+        parse_line(line, bytes_overflowed + bytes_read, &parse_res, vector_for_parse);
         
         if(parse_res.success && parse_res.var_type != NONE_VAR) {
           config_var_s* conf_var = __create_config_var(
@@ -187,7 +186,7 @@ config_s* load_config(char* config_file_path) {
         line[bytes_overflowed + bytes_read] = 0;
 
         parse_result_s parse_res;
-        parse_line(line, bytes_overflowed + bytes_read, &parse_res);
+        parse_line(line, bytes_overflowed + bytes_read, &parse_res, vector_for_parse);
         
         if(parse_res.success && parse_res.var_type != NONE_VAR) {
           config_var_s* conf_var = __create_config_var(
@@ -207,7 +206,7 @@ config_s* load_config(char* config_file_path) {
           line[buff_len - buff_offset] = 0;
 
           parse_result_s parse_res;
-          parse_line(line, buff_len - buff_offset, &parse_res);
+          parse_line(line, buff_len - buff_offset, &parse_res, vector_for_parse);
 
           if(parse_res.success && parse_res.var_type != NONE_VAR) {
             config_var_s* conf_var = __create_config_var(

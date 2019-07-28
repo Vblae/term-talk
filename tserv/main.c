@@ -9,6 +9,7 @@ int main(int argc, char** argv) {
   config_s* conf = load_config(argv[1]);
   printf("p: %p\n", conf);
 
+  printf("\nvector test start ------------------\n");
   vector_s* vector = vector_of_string_create(0);
   char* test[] = {
     "str 1",
@@ -19,7 +20,6 @@ int main(int argc, char** argv) {
   for(int i = 0; i < 4; i++) {
     vector_push(vector, &test[i]);
   }
-
   for(int i = 0; i < vector->len; i++) {
     char** val = (char**) vector_get(vector, i);
     printf("og:%p->%s new:%p->%s\n", test[i], test[i], *val, *val);
@@ -33,5 +33,6 @@ int main(int argc, char** argv) {
   int idx = vector_find(vector, str);
   printf("idx: %d\n", idx);
   vector_free(vector);
+  printf("vector test end ------------------\n");
   return 0;
 }

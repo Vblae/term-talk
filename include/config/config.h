@@ -1,5 +1,5 @@
-#ifndef __TSERV_CONFIG__
-#define __TSERV_CONFIG__
+#ifndef __CONFIG__
+#define __CONFIG__
 
 #define MAX_VAL_LEN 255
 #define MAX_VAR_LEN 255
@@ -16,7 +16,6 @@ struct config_var {
     long long_val;
     float float_val;
     double double_val;
-    char char_val;
     char string_val[MAX_VAL_LEN + 1];
   };
 };

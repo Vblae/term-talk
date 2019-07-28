@@ -62,5 +62,7 @@ void* vector_get(vector_s* vector, int idx);
 
 int vector_find(vector_s* vector, void* val);
 
+void vector_clear(vector_s* vector);
+
 #endif
 

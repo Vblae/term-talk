@@ -331,3 +331,12 @@ int vector_find(vector_s* vector, void* val) {
   return -1;
 }
 
+void vector_clear(vector_s* vector) {
+  if(!vector || !vector->len)
+    return;
+
+  vector_wrapper_s* vector_wrapper = (vector_wrapper_s*) vector;
+  memset(vector_wrapper->__data_block, 0, vector->len * vector_wrapper->__item_size);
+  vector->len = 0;
+}
+
