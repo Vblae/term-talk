@@ -3,14 +3,14 @@
 
 #include "util/vector.h"
 
-#define NONE_VAR 0x00
-#define BYTE_VAR 0x10
-#define SHORT_VAR 0x20
-#define INT_VAR 0x30
-#define LONG_VAR 0x40
-#define FLOAT_VAR 0x50
-#define DOUBLE_VAR 0x60
-#define STRING_VAR 0x80
+#define NONE_TYPE 0x00
+#define BYTE_TYPE 0x10
+#define SHORT_TYPE 0x20
+#define INT_TYPE 0x30
+#define LONG_TYPE 0x40
+#define FLOAT_TYPE 0x50
+#define DOUBLE_TYPE 0x60
+#define STRING_TYPE 0x80
 
 #define NONE_TYPE_SPECIFIER "None"
 #define BYTE_TYPE_SPECIFIER "byte"

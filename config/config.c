@@ -45,25 +45,25 @@ config_var_s* __create_config_var(char* name, void* data, data_type_t type) {
   strncpy(&conf_var->name[0], name, MAX_VAR_LEN);
 
   switch(type) {
-    case BYTE_VAR:
+    case BYTE_TYPE:
       conf_var->byte_val = *((char*) data);
      break;
-    case SHORT_VAR:
+    case SHORT_TYPE:
       conf_var->short_val = *((short*) data);
       break;
-    case INT_VAR:
+    case INT_TYPE:
       conf_var->int_val = *((int*) data);
       break;
-    case LONG_VAR:
+    case LONG_TYPE:
       conf_var->long_val = *((long*) data);
       break;
-    case FLOAT_VAR:
+    case FLOAT_TYPE:
       conf_var->float_val = *((float*) data);
       break;
-    case DOUBLE_VAR:
+    case DOUBLE_TYPE:
       conf_var->double_val = *((double*) data);
       break;
-    case STRING_VAR:
+    case STRING_TYPE:
       strncpy(&conf_var->string_val[0], data, MAX_VAL_LEN);
       break;
     default:
@@ -138,7 +138,7 @@ config_s* load_config(char* config_file_path) {
         parse_result_s parse_res;
         parse_line(line, nl_index, &parse_res, vector_for_parse);
         
-        if(parse_res.success && parse_res.var_type != NONE_VAR) {
+        if(parse_res.success && parse_res.var_type != NONE_TYPE) {
           config_var_s* conf_var = __create_config_var(
             parse_res.var_name,
             parse_res.var_data,
@@ -162,7 +162,7 @@ config_s* load_config(char* config_file_path) {
         parse_result_s parse_res;
         parse_line(line, bytes_overflowed + bytes_read, &parse_res, vector_for_parse);
         
-        if(parse_res.success && parse_res.var_type != NONE_VAR) {
+        if(parse_res.success && parse_res.var_type != NONE_TYPE) {
           config_var_s* conf_var = __create_config_var(
             parse_res.var_name,
             parse_res.var_data,
@@ -188,7 +188,7 @@ config_s* load_config(char* config_file_path) {
         parse_result_s parse_res;
         parse_line(line, bytes_overflowed + bytes_read, &parse_res, vector_for_parse);
         
-        if(parse_res.success && parse_res.var_type != NONE_VAR) {
+        if(parse_res.success && parse_res.var_type != NONE_TYPE) {
           config_var_s* conf_var = __create_config_var(
             parse_res.var_name,
             parse_res.var_data,
@@ -208,7 +208,7 @@ config_s* load_config(char* config_file_path) {
           parse_result_s parse_res;
           parse_line(line, buff_len - buff_offset, &parse_res, vector_for_parse);
 
-          if(parse_res.success && parse_res.var_type != NONE_VAR) {
+          if(parse_res.success && parse_res.var_type != NONE_TYPE) {
             config_var_s* conf_var = __create_config_var(
               parse_res.var_name,
               parse_res.var_data,

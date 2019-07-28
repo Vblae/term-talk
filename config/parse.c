@@ -41,27 +41,27 @@ static inline int __is_white_space(char c) {
 
 static data_type_t __is_type_specifier(char* type) {
   if(strcmp(type, BYTE_TYPE_SPECIFIER) == 0)
-    return BYTE_VAR;
+    return BYTE_TYPE;
 
   if(strcmp(type, SHORT_TYPE_SPECIFIER) == 0)
-    return SHORT_VAR;
+    return SHORT_TYPE;
 
   if(strcmp(type, INT_TYPE_SPECIFIER) == 0)
-    return INT_VAR;
+    return INT_TYPE;
 
   if(strcmp(type, LONG_TYPE_SPECIFIER) == 0)
-    return LONG_VAR;
+    return LONG_TYPE;
 
   if(strcmp(type, FLOAT_TYPE_SPECIFIER) == 0)
-    return FLOAT_VAR;
+    return FLOAT_TYPE;
 
   if(strcmp(type, DOUBLE_TYPE_SPECIFIER) == 0)
-    return DOUBLE_VAR;
+    return DOUBLE_TYPE;
 
   if(strcmp(type, STRING_TYPE_SPECIFIER) == 0)
-    return STRING_VAR;
+    return STRING_TYPE;
 
-  return NONE_VAR;
+  return NONE_TYPE;
 }
 
 static int __is_name(char* id) {
@@ -133,19 +133,19 @@ static int __is_string_literal(char* string_literal) {
 
 static char* __data_type_to_string(data_type_t type) {
   switch(type) {
-    case BYTE_VAR:
+    case BYTE_TYPE:
       return BYTE_TYPE_SPECIFIER;
-    case SHORT_VAR:
+    case SHORT_TYPE:
       return SHORT_TYPE_SPECIFIER;
-    case INT_VAR:
+    case INT_TYPE:
       return INT_TYPE_SPECIFIER;
-    case LONG_VAR:
+    case LONG_TYPE:
       return LONG_TYPE_SPECIFIER;
-    case FLOAT_VAR:
+    case FLOAT_TYPE:
       return FLOAT_TYPE_SPECIFIER;
-    case DOUBLE_VAR:
+    case DOUBLE_TYPE:
       return DOUBLE_TYPE_SPECIFIER;
-    case STRING_VAR:
+    case STRING_TYPE:
       return STRING_TYPE_SPECIFIER;
   }
 
@@ -154,15 +154,15 @@ static char* __data_type_to_string(data_type_t type) {
 
 static inline data_type_t __soft_type_of(char* value) {
   if(__is_integer(value))
-    return INT_VAR;
+    return INT_TYPE;
 
   if(__is_real_number(value))
-    return FLOAT_VAR;
+    return FLOAT_TYPE;
 
   if(__is_string_literal(value))
-    return STRING_VAR;
+    return STRING_TYPE;
 
-  return NONE_VAR;
+  return NONE_TYPE;
 }
 static int __tokenize_line(char* line, size_t line_len, vector_s* vector) {
   if(!line || !line_len)
@@ -292,7 +292,7 @@ static inline void __make_none_var(parse_result_s* parse_res) {
     parse_res->success = 1;
     parse_res->var_name = (char*) 0;
     parse_res->var_data = (void*) 0;
-    parse_res->var_type = NONE_VAR;
+    parse_res->var_type = NONE_TYPE;
 }
 
 static void __match_var_decleration(
@@ -352,20 +352,20 @@ static void __match_var_decleration(
   char* type_received = __data_type_to_string(__soft_type_of(*value_as_string));
   int type_error = 0;
   switch(var_type) {
-    case BYTE_VAR:
-    case SHORT_VAR:
-    case INT_VAR:
-    case LONG_VAR:
+    case BYTE_TYPE:
+    case SHORT_TYPE:
+    case INT_TYPE:
+    case LONG_TYPE:
       if(!__is_integer(*value_as_string))
        type_error = 1; 
 
       break;
-    case FLOAT_VAR:
-    case DOUBLE_VAR:
+    case FLOAT_TYPE:
+    case DOUBLE_TYPE:
       if(!__is_real_number(*value_as_string))
         type_error = 1;
       break;
-    case STRING_VAR:
+    case STRING_TYPE:
       if(!__is_string_literal(*value_as_string))
         type_error = 1;
       break;
