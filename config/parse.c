@@ -192,6 +192,7 @@ static int __tokenize_line(char* line, size_t line_len, vector_s* vector) {
   const int SKIP_WHITE_SPACE = 5;
 
   int state = START_STATE;
+  int next_state = START_STATE;
   while(it < end) {
     switch(state) {
       case PUSH_STATE:
@@ -200,29 +201,29 @@ static int __tokenize_line(char* line, size_t line_len, vector_s* vector) {
         token_copy[token_len] = 0;
 
         vector_push(vector, &token_copy);
-        state = INIT_STATE;
+        next_state = INIT_STATE;
         break;
       case INIT_STATE:
         token_copy = 0;
         token_start = 0;
         token_len = 0;
-        state = START_STATE;
+        next_state = START_STATE;
         break;
       case START_STATE:
         if(__is_white_space(*it))
-          state = SKIP_WHITE_SPACE;
+          next_state = SKIP_WHITE_SPACE;
         else if(__is_underscore(*it) || __is_alpha(*it)) 
-          state = FORM_WORD;
+          next_state = FORM_WORD;
         else if(__is_negative_sign(*it) || __is_digit(*it) || __is_point(*it))
-          state = FORM_NUMBER;
+          next_state = FORM_NUMBER;
         else if(__is_colon(*it))
-          state = FORM_SYMBOL;
+          next_state = FORM_SYMBOL;
         else if(__is_single_quote(*it))
-          state = FORM_STRING;
+          next_state = FORM_STRING;
         else
-          state = INVALID_STATE;
+          next_state = INVALID_STATE;
 
-        switch(state) {
+        switch(next_state) {
           case FORM_WORD:
           case FORM_NUMBER:
           case FORM_SYMBOL:
@@ -235,7 +236,7 @@ static int __tokenize_line(char* line, size_t line_len, vector_s* vector) {
         break;
       case FORM_WORD:
         if(!__is_underscore(*it) && !__is_alpha(*it) && !__is_digit(*it)) {
-          state = PUSH_STATE;
+          next_state = PUSH_STATE;
         } else {
           token_len++;
           it++;
@@ -243,7 +244,7 @@ static int __tokenize_line(char* line, size_t line_len, vector_s* vector) {
         break;
       case FORM_NUMBER:
         if(!__is_digit(*it) && !__is_negative_sign(*it) && !__is_point(*it)) {
-          state = PUSH_STATE;
+          next_state = PUSH_STATE;
         } else {
           token_len++;
           it++;
@@ -251,7 +252,7 @@ static int __tokenize_line(char* line, size_t line_len, vector_s* vector) {
         break;
       case FORM_SYMBOL:
         if(!__is_colon(*it)) {
-          state = PUSH_STATE;
+          next_state = PUSH_STATE;
         } else {
           token_len++;
           it++;
@@ -259,14 +260,14 @@ static int __tokenize_line(char* line, size_t line_len, vector_s* vector) {
         break;
       case FORM_STRING:
         if(__is_single_quote(*it))
-          state = PUSH_STATE;
+          next_state = PUSH_STATE;
 
         token_len++;
         it++;
         break;
       case SKIP_WHITE_SPACE:
         if(!__is_white_space(*it))
-          state = START_STATE;
+          next_state = START_STATE;
         else
           it++;
         break;
@@ -283,6 +284,8 @@ static int __tokenize_line(char* line, size_t line_len, vector_s* vector) {
 
       vector_push(vector, &token_copy);
     }
+
+    state = next_state;
   }
 
   return 1;
