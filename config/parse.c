@@ -357,7 +357,7 @@ static void __match_var_decleration(
     case INT_TYPE:
     case LONG_TYPE:
       if(!__is_integer(*value_as_string))
-       type_error = 1; 
+        type_error = 1; 
 
       break;
     case FLOAT_TYPE:
@@ -380,6 +380,9 @@ static void __match_var_decleration(
       type_received,
       line
     );
+
+    __make_none_var(parse_res);
+    return;
   }
 }
 
