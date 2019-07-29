@@ -78,7 +78,7 @@ static int __is_name(char* id) {
     it++;
   }
 
-  return 1;
+  return !__is_type_specifier(id);
 }
 
 static int __is_integer(char* integer) {
@@ -169,7 +169,9 @@ static int __tokenize_line(char* line, size_t line_len, vector_s* vector) {
     return 0;
 
   if(!vector) {
-    printf("error: parser: vector can not be null\n");
+    printf(
+      "error: parser: ivalid argument given to __tokenize_line vector cannot be null\n"
+    );
     return 0;
   }
   
@@ -301,6 +303,7 @@ static inline void __make_none_var(parse_result_s* parse_res) {
 static void __match_var_decleration(
   char* line,
   size_t line_len,
+  size_t line_num,
   parse_result_s* parse_res,
   vector_s* vector
 ) {
@@ -325,15 +328,21 @@ static void __match_var_decleration(
   
   int var_type;
   if(!(var_type = __is_type_specifier(*type_specifier))) {
-    printf("error: parser: invalid type '%s' in line '%s'\n", *type_specifier, line);
+    printf(
+      "error: parser: invalid type '%s' in line %lu \n==> %s\n",
+      *type_specifier,
+      line_num,
+      line
+    );
     __make_none_var(parse_res);
     return;
   }
 
   if(!__is_name(*variable_name)) {
     printf(
-      "error: parser: invalid variable name '%s' in line '%s'\n",
-      *variable_name, 
+      "error: parser: invalid variable name '%s' in line %lu\n==> %s\n",
+      *variable_name,
+      line_num,
       line
     );
 
@@ -343,8 +352,9 @@ static void __match_var_decleration(
 
   if(!__is_colon(**colon)) {
     printf(
-      "error: parser: expected symbol ':' but got '%s' instead in line '%s'\n",
+      "error: parser: expected symbol ':' but got '%s' instead in line %lu\n==> %s\n",
       *colon,
+      line_num,
       line
     );
 
@@ -377,10 +387,11 @@ static void __match_var_decleration(
   if(type_error) {
     printf(
       "error: parser: expected value of type '%s' but got '%s' of type '%s'"
-        " in line \n[%s]\n",
+        " in line %lu\n==> %s\n",
       *type_specifier,
       *value_as_string,
       type_received,
+      line_num,
       line
     );
 
@@ -392,13 +403,14 @@ static void __match_var_decleration(
 void parse_line(
   char* line,
   size_t line_len,
+  size_t line_num,
   parse_result_s* parse_res,
   vector_s* vector
 ) {
   if(!line || !line_len)
     __make_none_var(parse_res);
   else
-    __match_var_decleration(line, line_len, parse_res, vector);
+    __match_var_decleration(line, line_len, line_num, parse_res, vector);
 
   for(int i = 0; i < vector->len; i++) {
     char* ptr = *((char**) vector_get(vector, i));

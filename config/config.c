@@ -136,7 +136,7 @@ config_s* load_config(char* config_file_path) {
         line[nl_index] = 0;
         
         parse_result_s parse_res;
-        parse_line(line, nl_index, &parse_res, vector_for_parse);
+        parse_line(line, nl_index, line_num, &parse_res, vector_for_parse);
         
         if(parse_res.success && parse_res.var_type != NONE_TYPE) {
           config_var_s* conf_var = __create_config_var(
@@ -160,7 +160,13 @@ config_s* load_config(char* config_file_path) {
         line[bytes_overflowed + bytes_read] = 0;
 
         parse_result_s parse_res;
-        parse_line(line, bytes_overflowed + bytes_read, &parse_res, vector_for_parse);
+        parse_line(
+          line,
+          bytes_overflowed + bytes_read,
+          line_num,
+          &parse_res,
+          vector_for_parse
+        );
         
         if(parse_res.success && parse_res.var_type != NONE_TYPE) {
           config_var_s* conf_var = __create_config_var(
@@ -186,7 +192,13 @@ config_s* load_config(char* config_file_path) {
         line[bytes_overflowed + bytes_read] = 0;
 
         parse_result_s parse_res;
-        parse_line(line, bytes_overflowed + bytes_read, &parse_res, vector_for_parse);
+        parse_line(
+          line,
+          bytes_overflowed + bytes_read,
+          line_num,
+          &parse_res,
+          vector_for_parse
+        );
         
         if(parse_res.success && parse_res.var_type != NONE_TYPE) {
           config_var_s* conf_var = __create_config_var(
@@ -206,7 +218,13 @@ config_s* load_config(char* config_file_path) {
           line[buff_len - buff_offset] = 0;
 
           parse_result_s parse_res;
-          parse_line(line, buff_len - buff_offset, &parse_res, vector_for_parse);
+          parse_line(
+            line,
+            buff_len - buff_offset,
+            line_num,
+            &parse_res,
+            vector_for_parse
+          );
 
           if(parse_res.success && parse_res.var_type != NONE_TYPE) {
             config_var_s* conf_var = __create_config_var(
