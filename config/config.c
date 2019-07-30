@@ -31,27 +31,7 @@ static void __shift_buff_left(
   memset(&buff[shift_amnt], 0, buff_len - shift_amnt);
 }
 
-config_s* create_config() {
-  config_s* conf = (config_s*) malloc(sizeof(config_s));
-  conf->vars = 0;
-  conf->tail = 0;
-
-  return conf;
-}
-
-void free_config(config_s* conf) {
-  config_var_s* conf_var = conf->vars;
-  while(conf_var) {
-    config_var_s* next = conf_var->next;
-    free(conf_var);
-
-    conf_var = next;
-  }
-
-  free(conf);
-}
-
-config_var_s* __create_config_var(char* name, void* data, data_type_t type) {
+static config_var_s* __create_config_var(char* name, void* data, data_type_t type) {
   config_var_s* conf_var = (config_var_s*) malloc(sizeof(config_var_s));
   strncpy(&conf_var->name[0], name, MAX_VAR_LEN);
 
@@ -94,12 +74,33 @@ static void __add_config_var_tail(config_s* conf, config_var_s* conf_var) {
   conf->tail = conf_var;
 }
 
-void __add_config_var(config_s* conf, config_var_s* conf_var) {
+static void __add_config_var(config_s* conf, config_var_s* conf_var) {
   if(!conf->vars)
     __add_config_var_head(conf, conf_var);
   else
     __add_config_var_tail(conf, conf_var);
 }
+
+config_s* create_config() {
+  config_s* conf = (config_s*) malloc(sizeof(config_s));
+  conf->vars = 0;
+  conf->tail = 0;
+
+  return conf;
+}
+
+void free_config(config_s* conf) {
+  config_var_s* conf_var = conf->vars;
+  while(conf_var) {
+    config_var_s* next = conf_var->next;
+    free(conf_var);
+
+    conf_var = next;
+  }
+
+  free(conf);
+}
+
 
 config_s* load_config(char* config_file_path) {
   if(!config_file_path) {
