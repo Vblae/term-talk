@@ -324,14 +324,6 @@ static void __match_var_decleration(
     return;
   }
   
-  //m_log_error("line[%lu]: %s => tokens {\n", line_len, line);
-  //for(int i = 0; i < vector->len; i++) {
-  //  char** token_ptr = (char**) vector_get(vector, i);
-  //  m_log_error("  %s,\n", *token_ptr);
-  //}
-
-  //m_log_error("}\n");
-  
   char** type_specifier = (char**) vector_get(vector, 0);
   char** variable_name = (char**) vector_get(vector, 1);
   char** colon = (char**) vector_get(vector, 2);
