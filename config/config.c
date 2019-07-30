@@ -8,6 +8,7 @@
 #include "config/config.h"
 #include "config/parse.h"
 #include "util/vector.h"
+#include "util/log.h"
 
 #define BUFF_LEN 1024
 
@@ -92,13 +93,13 @@ void __add_config_var(config_s* conf, config_var_s* conf_var) {
 
 config_s* load_config(char* config_file_path) {
   if(!config_file_path) {
-    printf("error: invalid config file path '%s'\n", config_file_path);
+    m_log_error("error: invalid config file path '%s'\n", config_file_path);
     return 0;
   }
 
   int fd = open(config_file_path, O_RDONLY);
   if(fd == -1) {
-    printf("error: could not open file '%s'\n", config_file_path);
+    m_log_error("error: could not open file '%s'\n", config_file_path);
     return 0;
   }
   
@@ -181,7 +182,7 @@ config_s* load_config(char* config_file_path) {
       }
       
       if(!saw_nl && check_read == 1 && check != '\n') {
-        printf("error: line %d: line is too long\n", line_num);
+        m_log_error("error: line %d: line is too long\n", line_num);
         free(conf);
         return 0;
       }

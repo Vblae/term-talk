@@ -6,6 +6,7 @@
 #include "config/config.h"
 #include "config/parse.h"
 #include "util/vector.h"
+#include "util/log.h"
 
 static inline int __is_alpha(char c) {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
@@ -169,7 +170,7 @@ static int __tokenize_line(char* line, size_t line_len, vector_s* vector) {
     return 0;
 
   if(!vector) {
-    printf(
+    m_log_error(
       "error: parser: ivalid argument given to __tokenize_line vector cannot be null\n"
     );
     return 0;
@@ -275,7 +276,7 @@ static int __tokenize_line(char* line, size_t line_len, vector_s* vector) {
         break;
       case INVALID_STATE:
       default:
-        printf("error: parser: invalid character '%c' in line '%s'\n", *it, line);
+        m_log_error("error: parser: invalid character '%c' in line '%s'\n", *it, line);
         return 0;
     }  
 
@@ -313,13 +314,13 @@ static void __match_var_decleration(
     return;
   }
   
-  //printf("line[%lu]: %s => tokens {\n", line_len, line);
+  //m_log_error("line[%lu]: %s => tokens {\n", line_len, line);
   //for(int i = 0; i < vector->len; i++) {
   //  char** token_ptr = (char**) vector_get(vector, i);
-  //  printf("  %s,\n", *token_ptr);
+  //  m_log_error("  %s,\n", *token_ptr);
   //}
 
-  //printf("}\n");
+  //m_log_error("}\n");
   
   char** type_specifier = (char**) vector_get(vector, 0);
   char** variable_name = (char**) vector_get(vector, 1);
@@ -328,7 +329,7 @@ static void __match_var_decleration(
   
   int var_type;
   if(!(var_type = __is_type_specifier(*type_specifier))) {
-    printf(
+    m_log_error(
       "error: parser: invalid type '%s' in line %lu \n==> %s\n",
       *type_specifier,
       line_num,
@@ -339,7 +340,7 @@ static void __match_var_decleration(
   }
 
   if(!__is_name(*variable_name)) {
-    printf(
+    m_log_error(
       "error: parser: invalid variable name '%s' in line %lu\n==> %s\n",
       *variable_name,
       line_num,
@@ -351,7 +352,7 @@ static void __match_var_decleration(
   }
 
   if(!__is_colon(**colon)) {
-    printf(
+    m_log_error(
       "error: parser: expected symbol ':' but got '%s' instead in line %lu\n==> %s\n",
       *colon,
       line_num,
@@ -385,7 +386,7 @@ static void __match_var_decleration(
   }
   
   if(type_error) {
-    printf(
+    m_log_error(
       "error: parser: expected value of type '%s' but got '%s' of type '%s'"
         " in line %lu\n==> %s\n",
       *type_specifier,
