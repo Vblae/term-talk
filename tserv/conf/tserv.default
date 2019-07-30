@@ -4,7 +4,7 @@ short port: 56000
 int test_int: -78
 long test_long: 2000
 
-float string: 78.123
+float string; 78.123
 double test_double: 0.3
 
 string ip_address: '127.0.0.1'

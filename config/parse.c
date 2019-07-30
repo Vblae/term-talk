@@ -165,7 +165,12 @@ static inline data_type_t __soft_type_of(char* value) {
 
   return NONE_TYPE;
 }
-static int __tokenize_line(char* line, size_t line_len, vector_s* vector) {
+static int __tokenize_line(
+  char* line,
+  size_t line_len,
+  size_t line_num,
+  vector_s* vector
+) {
   if(!line || !line_len)
     return 0;
 
@@ -276,7 +281,12 @@ static int __tokenize_line(char* line, size_t line_len, vector_s* vector) {
         break;
       case INVALID_STATE:
       default:
-        m_log_error("error: parser: invalid character '%c' in line '%s'\n", *it, line);
+        m_log_error(
+          "error: parser: invalid character '%c' in line %lu\n=>%s\n",
+          *it,
+          line_num,
+          line
+        );
         return 0;
     }  
 
@@ -308,7 +318,7 @@ static void __match_var_decleration(
   parse_result_s* parse_res,
   vector_s* vector
 ) {
-  int success = __tokenize_line(line, line_len, vector);
+  int success = __tokenize_line(line, line_len, line_num, vector);
   if(!success) {
     __make_none_var(parse_res);
     return;
