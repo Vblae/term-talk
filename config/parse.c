@@ -325,14 +325,14 @@ static void __match_var_decleration(
   }
   
   char** type_specifier = (char**) vector_get(vector, 0);
-  char** variable_name = (char**) vector_get(vector, 1);
+  char** var_name = (char**) vector_get(vector, 1);
   char** colon = (char**) vector_get(vector, 2);
   char** value_as_string = (char**) vector_get(vector, 3);
   
   int var_type;
   if(!(var_type = __is_type_specifier(*type_specifier))) {
     m_log_error(
-      "error: parser: invalid type '%s' in line %lu \n==> %s\n",
+      "error: parser: invalid type '%s' in line %lu\n==>%s\n",
       *type_specifier,
       line_num,
       line
@@ -341,10 +341,10 @@ static void __match_var_decleration(
     return;
   }
 
-  if(!__is_name(*variable_name)) {
+  if(!__is_name(*var_name)) {
     m_log_error(
       "error: parser: invalid variable name '%s' in line %lu\n==> %s\n",
-      *variable_name,
+      *var_name,
       line_num,
       line
     );
@@ -363,6 +363,18 @@ static void __match_var_decleration(
 
     __make_none_var(parse_res);
     return; 
+  }
+
+  if(vector->len > 4) {
+    m_log_error(
+      "error: parser: unexpected token '%s' in line %lu\n==> %s\n",
+      *((char**) vector_get(vector, 4)),
+      line_num,
+      line
+    );
+    
+    __make_none_var(parse_res);
+    return;
   }
 
   char* type_received = __data_type_to_string(__soft_type_of(*value_as_string));
@@ -401,6 +413,21 @@ static void __match_var_decleration(
     __make_none_var(parse_res);
     return;
   }
+
+  parse_res->var_name = strdup(*var_name);
+  parse_res->var_data = strdup(*value_as_string);
+  parse_res->var_type = var_type;
+  parse_res->success = 1;
+}
+
+parse_result_s* create_parse_result() {
+  void* new_parse_result = malloc(sizeof(parse_result_s));
+  memset(new_parse_result, 0, sizeof(parse_result_s));
+  return (parse_result_s*) new_parse_result;
+}
+
+void free_parse_result(parse_result_s* parse_res) {
+  free(parse_res);
 }
 
 void parse_line(

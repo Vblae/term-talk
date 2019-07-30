@@ -20,18 +20,32 @@ struct vector {
 
 typedef struct vector vector_s;
 
+int vector_byte_comparator(void* item1, void* item2);
+
+int vector_short_comparator(void* item1, void* item2);
+
+int vector_int_comparator(void* item1, void* item2);
+
+int vector_long_comparator(void* item1, void* item2);
+
+int vector_float_comparator(void* item1, void* item2);
+
+int vector_double_comparator(void* item1, void* item2);
+
+int vector_pointer_comparator(void* item1, void* item2);
+
+int vector_string_comparator(void* item1, void* item2);
+
 vector_s* vector_create_with_allocators(
   size_t reserve,
   size_t item_size,
-  vector_item_comparator_f comparator_funct,
   vector_item_allocator_f allocator_funct,
   vector_item_deallocator_f deallocator_funct
 );
 
 vector_s* vector_create(
   size_t reserve,
-  size_t item_size,
-  vector_item_comparator_f comparator_funct
+  size_t item_size
 );
 
 vector_s* vector_of_byte_create(size_t reserve);
@@ -60,7 +74,7 @@ void* vector_top(vector_s* vector);
 
 void* vector_get(vector_s* vector, int idx);
 
-int vector_find(vector_s* vector, void* val);
+int vector_find(vector_s* vector, void* val, vector_item_comparator_f comp_funct);
 
 void vector_clear(vector_s* vector);
 

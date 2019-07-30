@@ -33,6 +33,10 @@ struct parse_result {
 
 typedef struct parse_result parse_result_s;
 
+parse_result_s* create_parse_result(); 
+
+void free_parse_result();
+
 void parse_line(
   char* line,
   size_t line_len,

@@ -25,47 +25,6 @@ static void __vector_default_deallocator(void* item) {
 
 }
 
-static int __vector_byte_comparator(void* item1, void* item2) {
-  return *((char*) item1) - *((char*) item2);
-}
-
-static int __vector_short_comparator(void* item1, void* item2) {
-  return *((short*) item1) - *((short*) item2);
-}
-
-static int __vector_int_comparator(void* item1, void* item2) {
-  return *((int*) item1) - *((int*) item2);
-}
-
-static int __vector_long_comparator(void* item1, void* item2) {
-  return *((long*) item1) - *((int*) item2);
-}
-
-static int __vector_float_comparator(void* item1, void* item2) {
-  return *((float*) item1) - *((float*) item2);
-}
-
-static int __vector_double_comparator(void* item1, void* item2) {
-  return *((double*) item1) - *((double*) item2);
-}
-
-static int __vector_pointer_comparator(void* item1, void* item2) {
-  return item1 - item2;
-}
-
-static int __vector_string_comparator(void* item1, void* item2) {
-  if(!*((char**) item1) && !*((char**) item2))
-      return 0;
-
-  if(!*((char**) item1))
-    return 1;
-
-  if(!*((char**) item2))
-    return -1;
-
-  return strcmp(*((char**) item1), *((char**) item2));
-}
-
 int __vector_double_capacity(vector_wrapper_s* vector) {
   void* new_data_block = malloc(2 * vector->vec.cap * vector->__item_size);
   void* old_data_block = vector->__data_block;
@@ -84,20 +43,55 @@ int __vector_double_capacity(vector_wrapper_s* vector) {
   return 1;
 }
 
+int vector_byte_comparator(void* item1, void* item2) {
+  return *((char*) item1) - *((char*) item2);
+}
+
+int vector_short_comparator(void* item1, void* item2) {
+  return *((short*) item1) - *((short*) item2);
+}
+
+int vector_int_comparator(void* item1, void* item2) {
+  return *((int*) item1) - *((int*) item2);
+}
+
+int vector_long_comparator(void* item1, void* item2) {
+  return *((long*) item1) - *((int*) item2);
+}
+
+int vector_float_comparator(void* item1, void* item2) {
+  return *((float*) item1) - *((float*) item2);
+}
+
+int vector_double_comparator(void* item1, void* item2) {
+  return *((double*) item1) - *((double*) item2);
+}
+
+int vector_pointer_comparator(void* item1, void* item2) {
+  return item1 - item2;
+}
+
+int vector_string_comparator(void* item1, void* item2) {
+  if(!*((char**) item1) && !*((char**) item2))
+      return 0;
+
+  if(!*((char**) item1))
+    return 1;
+
+  if(!*((char**) item2))
+    return -1;
+
+  return strcmp(*((char**) item1), *((char**) item2));
+}
+
 vector_s* vector_create_with_allocators(
     size_t reserve,
     size_t item_size,
-    vector_item_comparator_f comparator_funct,
     vector_item_allocator_f allocator_funct,
     vector_item_deallocator_f deallocator_funct
 ) {
   if(!item_size) {
     printf("error: vector: item_size cannot be zero\n");
-    return 0;
-  }
-
-  if(!comparator_funct) {
-    printf("error: vector: comparator_funct cannot be null\n");
     return 0;
   }
 
@@ -126,7 +120,6 @@ vector_s* vector_create_with_allocators(
   vector->vec.cap = actual_reserve;
 
   vector->__item_size = item_size;
-  vector->__comparator_funct = comparator_funct;
   vector->__allocator_funct = allocator_funct;
   vector->__deallocator_funct = deallocator_funct;
   return &vector->vec;
@@ -134,13 +127,11 @@ vector_s* vector_create_with_allocators(
 
 vector_s* vector_create(
   size_t reserve,
-  size_t item_size,
-  vector_item_comparator_f comparator_funct
+  size_t item_size
 ) {
   return vector_create_with_allocators(
       reserve,
       item_size,
-      comparator_funct,
       &__vector_default_allocator,
       &__vector_default_deallocator
   );
@@ -150,7 +141,6 @@ vector_s* vector_of_byte_create(size_t reserve) {
   return vector_create_with_allocators(
     reserve,
     sizeof(char),
-    &__vector_byte_comparator,
     &__vector_default_allocator,
     &__vector_default_deallocator
   );
@@ -160,7 +150,6 @@ vector_s* vector_of_short_create(size_t reserve) {
   return vector_create_with_allocators(
     reserve,
     sizeof(short),
-    &__vector_short_comparator,
     &__vector_default_allocator,
     &__vector_default_deallocator
   );
@@ -170,7 +159,6 @@ vector_s* vector_of_int_create(size_t reserve) {
   return vector_create_with_allocators(
     reserve,
     sizeof(int),
-    &__vector_int_comparator,
     &__vector_default_allocator,
     &__vector_default_deallocator
   );
@@ -180,7 +168,6 @@ vector_s* vector_of_long_create(size_t reserve) {
   return vector_create_with_allocators(
     reserve,
     sizeof(long),
-    &__vector_long_comparator,
     &__vector_default_allocator,
     &__vector_default_deallocator
   );
@@ -190,7 +177,6 @@ vector_s* vector_of_pointer_create(size_t reserve) {
   return vector_create_with_allocators(
     reserve,
     sizeof(void*),
-    &__vector_pointer_comparator,
     &__vector_default_allocator,
     &__vector_default_deallocator
   );
@@ -200,7 +186,6 @@ vector_s* vector_of_float_create(size_t reserve) {
   return vector_create_with_allocators(
     reserve,
     sizeof(float),
-    &__vector_float_comparator,
     &__vector_default_allocator,
     &__vector_default_deallocator
   );
@@ -210,7 +195,6 @@ vector_s* vector_of_double_create(size_t reserve) {
   return vector_create_with_allocators(
     reserve,
     sizeof(double),
-    &__vector_double_comparator,
     &__vector_default_allocator,
     &__vector_default_deallocator
   );
@@ -220,7 +204,6 @@ vector_s* vector_of_string_create(size_t reserve) {
   return vector_create_with_allocators(
     reserve,
     sizeof(char*),
-    &__vector_string_comparator,
     &__vector_default_allocator,
     &__vector_default_deallocator
   );
@@ -317,14 +300,14 @@ void* vector_get(vector_s* vector, int idx) {
   return &vector_wrapper->__data_block[idx * vector_wrapper->__item_size];
 }
 
-int vector_find(vector_s* vector, void* val) {
+int vector_find(vector_s* vector, void* val, vector_item_comparator_f comp_funct) {
   if(!vector || !val)
     return -1;
   
   vector_wrapper_s* vector_wrapper = (vector_wrapper_s*) vector;
   for(int i = 0; i < vector->len; i++) {
     void* other = &vector_wrapper->__data_block[i * vector_wrapper->__item_size];
-    if(vector_wrapper->__comparator_funct(val, other) == 0)
+    if(comp_funct(val, other) == 0)
       return i;
   }
 

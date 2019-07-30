@@ -1,7 +1,7 @@
 byte test_byte: 10
 short port: 56000
 
-int test_int: -78
+int test_int: -78 test
 long test_long: 2000
 
 float string; 78.123

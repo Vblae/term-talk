@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
   printf("top: %s\n", *((char**) vector_top(vector)));
   
   char** str = &test[1];
-  int idx = vector_find(vector, str);
+  int idx = vector_find(vector, str, vector_string_comparator);
   printf("idx: %d\n", idx);
   vector_free(vector);
   printf("vector test end ------------------\n");

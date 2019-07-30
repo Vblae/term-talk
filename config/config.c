@@ -33,7 +33,11 @@ static void __shift_buff_left(
 
 static config_var_s* __create_config_var(char* name, void* data, data_type_t type) {
   config_var_s* conf_var = (config_var_s*) malloc(sizeof(config_var_s));
-  strncpy(&conf_var->name[0], name, MAX_VAR_LEN);
+  
+  size_t name_len = strlen(name);
+  size_t len = name_len < MAX_VAR_LEN ? name_len : MAX_VAR_LEN;
+  strncpy(conf_var->name, name, len);
+  conf_var->name[len] = 0;
 
   switch(type) {
     case BYTE_TYPE:
@@ -55,7 +59,7 @@ static config_var_s* __create_config_var(char* name, void* data, data_type_t typ
       conf_var->double_val = *((double*) data);
       break;
     case STRING_TYPE:
-      strncpy(&conf_var->string_val[0], data, MAX_VAL_LEN);
+      conf_var->string_val = (char*)  data;
       break;
     default:
       break;
