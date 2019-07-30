@@ -9,17 +9,27 @@
 #include "config/parse.h"
 #include "util/vector.h"
 #include "util/log.h"
+#include "util/stringutil.h"
 
 #define BUFF_LEN 1024
-
-static int __find_char(char* buff, char c, size_t buff_len);
 
 static void __shift_buff_left(
   char* buff,
   int start_index,
   int shift_amnt,
   size_t buff_len
-);
+) {
+  if(shift_amnt >= buff_len) {
+    memset(buff, 0, buff_len);
+    return;
+  }
+
+  for(int i = 0; i < shift_amnt; i++) {
+    buff[i] = buff[start_index + i];
+  }
+
+  memset(&buff[shift_amnt], 0, buff_len - shift_amnt);
+}
 
 config_s* create_config() {
   config_s* conf = (config_s*) malloc(sizeof(config_s));
@@ -123,7 +133,7 @@ config_s* load_config(char* config_file_path) {
       int nl_index = 0;
       int saw_nl = 0;
       while(
-        (nl_index = __find_char(&buff[buff_offset], '\n', buff_len - buff_offset)) != -1
+        (nl_index = index_of('\n', &buff[buff_offset], buff_len - buff_offset)) != -1
       ) {
         saw_nl = 1;
         if(nl_index == 0) {
@@ -255,42 +265,7 @@ config_s* load_config(char* config_file_path) {
   return conf;
 }
 
-static int __find_char(char* buff, char c, size_t buff_len) {
-  if(buff_len <= 0)
-    return -1;
 
-  int c_index = 0;
-  int found = 0;
-  while(c_index <  buff_len) {
-    if(buff[c_index] == c) {
-      found = 1;
-      break;
-    }
 
-    c_index++;
-  }
 
-  if(found)
-    return c_index;
-  
-  return -1;
-}
-
-static void __shift_buff_left(
-  char* buff,
-  int start_index,
-  int shift_amnt,
-  size_t buff_len
-) {
-  if(shift_amnt >= buff_len) {
-    memset(buff, 0, buff_len);
-    return;
-  }
-
-  for(int i = 0; i < shift_amnt; i++) {
-    buff[i] = buff[start_index + i];
-  }
-
-  memset(&buff[shift_amnt], 0, buff_len - shift_amnt);
-}
 
