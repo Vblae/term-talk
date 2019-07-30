@@ -2,11 +2,16 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #include "config/config.h"
 #include "config/parse.h"
 #include "util/vector.h"
 #include "util/log.h"
+#include "util/stringutil.h"
+
+#define BUFF_LEN 1024
 
 static inline int __is_alpha(char c) {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
@@ -420,17 +425,7 @@ static void __match_var_decleration(
   parse_res->success = 1;
 }
 
-parse_result_s* create_parse_result() {
-  void* new_parse_result = malloc(sizeof(parse_result_s));
-  memset(new_parse_result, 0, sizeof(parse_result_s));
-  return (parse_result_s*) new_parse_result;
-}
-
-void free_parse_result(parse_result_s* parse_res) {
-  free(parse_res);
-}
-
-void parse_line(
+void __parse_line(
   char* line,
   size_t line_len,
   size_t line_num,
@@ -448,5 +443,174 @@ void parse_line(
   }
 
   vector_clear(vector);
+}
+
+static void __shift_buff_left(
+  char* buff,
+  int start_index,
+  int shift_amnt,
+  size_t buff_len
+) {
+  if(shift_amnt >= buff_len) {
+    memset(buff, 0, buff_len);
+    return;
+  }
+
+  for(int i = 0; i < shift_amnt; i++) {
+    buff[i] = buff[start_index + i];
+  }
+
+  memset(&buff[shift_amnt], 0, buff_len - shift_amnt);
+}
+
+static void __parse_line_result_deallocator(void* parse_res) {
+  if(!parse_res)
+    return;
+
+  parse_result_s** parse_res_ptr = (parse_result_s**) parse_res;
+  if(!*parse_res_ptr)
+    return;
+
+  free((*parse_res_ptr)->var_name);
+  free((*parse_res_ptr)->var_data);
+}
+
+vector_s* parse_lines(int fd) {
+  size_t buff_len = BUFF_LEN;
+  char buff[buff_len];
+  memset(&buff, 0, buff_len);
+
+  vector_s* vector_for_parse = vector_of_string_create(5);
+  vector_s* parse_results = vector_create_with_allocators(
+    0,
+    sizeof(parse_result_s),
+    0,
+    __parse_line_result_deallocator
+  );
+
+  int line_num = 1;
+  size_t buff_offset = 0;
+  while(1) {
+    size_t bytes_read = 0;
+    size_t bytes_overflowed = 0;
+    size_t expected_bytes_read = buff_len - buff_offset;
+    while((bytes_read = read(fd, &buff[buff_offset], expected_bytes_read)) > 0) {
+      if(bytes_read < expected_bytes_read)
+        buff_len = bytes_read + bytes_overflowed;
+      
+      buff_offset = 0;
+      int nl_index = 0;
+      int saw_nl = 0;
+      while(
+        (nl_index = index_of('\n', &buff[buff_offset], buff_len - buff_offset)) != -1
+      ) {
+        saw_nl = 1;
+        if(nl_index == 0) {
+          buff_offset++;
+          line_num++;
+          continue;
+        }
+
+        char line[nl_index + 1];
+        memcpy(line, &buff[buff_offset], nl_index);
+        line[nl_index] = 0;
+        
+        parse_result_s parse_res;
+        __parse_line(line, nl_index, line_num, &parse_res, vector_for_parse);
+        
+        if(parse_res.success && parse_res.var_type != NONE_TYPE)
+          vector_push(parse_results, &parse_res);
+
+        buff_offset += nl_index + 1;
+        line_num++;
+      }
+
+      char check = 0;
+      size_t check_read = read(fd, &check, 1);
+      if(!saw_nl && check_read == 0) {
+        char line[bytes_overflowed + bytes_read + 1];
+        memcpy(line, &buff[buff_offset], bytes_overflowed + bytes_read);
+        line[bytes_overflowed + bytes_read] = 0;
+
+        parse_result_s parse_res;
+        __parse_line(
+          line,
+          bytes_overflowed + bytes_read,
+          line_num,
+          &parse_res,
+          vector_for_parse
+        );
+        
+        if(parse_res.success && parse_res.var_type != NONE_TYPE)
+          vector_push(parse_results, &parse_res);
+        
+        free(vector_for_parse);
+        return parse_results;
+      }
+      
+      if(!saw_nl && check_read == 1 && check != '\n') {
+        m_log_error("error: parser: line %d: line is too long\n", line_num);
+        vector_free(parse_results);
+        vector_free(vector_for_parse);
+        return 0;
+      }
+      
+      if(!saw_nl && check_read == 1 && check == '\n') {
+        char line[bytes_overflowed + bytes_read + 1];
+        memcpy(line, &buff[buff_offset], bytes_overflowed + bytes_read);
+        line[bytes_overflowed + bytes_read] = 0;
+
+        parse_result_s parse_res;
+        __parse_line(
+          line,
+          bytes_overflowed + bytes_read,
+          line_num,
+          &parse_res,
+          vector_for_parse
+        );
+        
+        if(parse_res.success && parse_res.var_type != NONE_TYPE)
+          vector_push(parse_results, &parse_res);
+        
+        buff_offset += bytes_overflowed + bytes_read; 
+        lseek(fd, -1, SEEK_CUR);
+      } else if(saw_nl) {
+        if(check_read == 0) {
+          char line[buff_len - buff_offset + 1];
+          memcpy(line, &buff[buff_offset], buff_len - buff_offset);
+          line[buff_len - buff_offset] = 0;
+
+          parse_result_s parse_res;
+          __parse_line(
+            line,
+            buff_len - buff_offset,
+            line_num,
+            &parse_res,
+            vector_for_parse
+          );
+
+          if(parse_res.success && parse_res.var_type != NONE_TYPE)
+            vector_push(parse_results, &parse_res);
+          
+          free(vector_for_parse);
+          return parse_results;
+        }
+        
+        lseek(fd, -1, SEEK_CUR);
+      }
+
+      bytes_overflowed = buff_len - buff_offset;
+      __shift_buff_left(buff, buff_offset, bytes_overflowed, buff_len);
+
+      buff_offset = bytes_overflowed;
+      expected_bytes_read = buff_len - buff_offset;
+    }
+
+    if(bytes_read <= 0)
+      break;
+  }
+
+  free(vector_for_parse);
+  return parse_results;
 }
 
