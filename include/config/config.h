@@ -1,13 +1,15 @@
 #ifndef __CONFIG__
 #define __CONFIG__
 
+#include "parse.h"
+
 #define MAX_VAR_LEN 255
 
 struct config_var {
   struct config_var* next;
   char name[MAX_VAR_LEN + 1];
 
-  int type;
+  data_type_t type;
   union {
     char byte_val;
     short short_val;

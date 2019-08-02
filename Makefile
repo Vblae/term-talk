@@ -1,5 +1,5 @@
 cC = gcc
-CFLAGS = -Wall -Werror
+CFLAGS = -Wall 
 
 INCDIR = include 
 OBJDIR = obj

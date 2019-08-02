@@ -137,7 +137,7 @@ static int __is_string_literal(char* string_literal) {
   return string_literal[0] == '\'' && string_literal[literal_len - 1] == '\'';
 }
 
-static char* __data_type_to_string(data_type_t type) {
+char* data_type_to_string(data_type_t type) {
   switch(type) {
     case BYTE_TYPE:
       return BYTE_TYPE_SPECIFIER;
@@ -274,6 +274,15 @@ static int __tokenize_line(
       case FORM_STRING:
         if(__is_single_quote(*it))
           next_state = PUSH_STATE;
+        else if(it == end - 1) {
+          m_log_error(
+            "error: parser: unclosed string literal [%s] in line %lu\n",
+            token_start,
+            line_num
+          );
+
+          return 0;
+        }
 
         token_len++;
         it++;
@@ -329,10 +338,10 @@ static void __match_var_decleration(
     return;
   }
   
-  char** type_specifier = (char**) vector_get(vector, 0);
-  char** var_name = (char**) vector_get(vector, 1);
-  char** colon = (char**) vector_get(vector, 2);
-  char** value_as_string = (char**) vector_get(vector, 3);
+  char** type_specifier = vector_get_t(char*, vector, 0);
+  char** var_name = vector_get_t(char*, vector, 1);
+  char** colon = vector_get_t(char*, vector, 2);
+  char** value_as_string = vector_get_t(char*, vector, 3);
   
   int var_type;
   if(!(var_type = __is_type_specifier(*type_specifier))) {
@@ -342,6 +351,7 @@ static void __match_var_decleration(
       line_num,
       line
     );
+
     __make_none_var(parse_res);
     return;
   }
@@ -382,7 +392,7 @@ static void __match_var_decleration(
     return;
   }
 
-  char* type_received = __data_type_to_string(__soft_type_of(*value_as_string));
+  char* type_received = data_type_to_string(__soft_type_of(*value_as_string));
   int type_error = 0;
   switch(var_type) {
     case BYTE_TYPE:
@@ -438,8 +448,8 @@ void __parse_line(
     __match_var_decleration(line, line_len, line_num, parse_res, vector);
 
   for(int i = 0; i < vector->len; i++) {
-    char* ptr = *((char**) vector_get(vector, i));
-    free(ptr);
+    char** ptr = vector_get_t(char*, vector, i);
+    free(*ptr);
   }
 
   vector_clear(vector);
@@ -467,12 +477,9 @@ static void __parse_line_result_deallocator(void* parse_res) {
   if(!parse_res)
     return;
 
-  parse_result_s** parse_res_ptr = (parse_result_s**) parse_res;
-  if(!*parse_res_ptr)
-    return;
-
-  free((*parse_res_ptr)->var_name);
-  free((*parse_res_ptr)->var_data);
+  parse_result_s* parse_res_ptr = (parse_result_s*) parse_res;
+  free(parse_res_ptr->var_name);
+  free(parse_res_ptr->var_data);
 }
 
 vector_s* parse_lines(int fd) {

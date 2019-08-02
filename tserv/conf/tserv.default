@@ -1,14 +1,14 @@
-byte test_byte: 10
-short port: 56000
+i8 test_byte: -10
+i16 port: -32769
 
-int test_int: -78 test
-long test_long: 2000
+i32 test_int: -78
+i64 test_long: 2000
 
-float string; 78.123
-double test_double: 0.3
+f32 _string: 78.123
+f64 test_double: 0.3
 
 string ip_address: '127.0.0.1'
 
-string test_string: 'This whole thing is the test string'
+string test_string: 'This whole thing is the test string
 
 string test_string_with_type_error: 10   

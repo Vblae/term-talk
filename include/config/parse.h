@@ -13,12 +13,12 @@
 #define STRING_TYPE 0x80
 
 #define NONE_TYPE_SPECIFIER "None"
-#define BYTE_TYPE_SPECIFIER "byte"
-#define SHORT_TYPE_SPECIFIER "short"
-#define INT_TYPE_SPECIFIER "int"
-#define LONG_TYPE_SPECIFIER "long"
-#define FLOAT_TYPE_SPECIFIER "float"
-#define DOUBLE_TYPE_SPECIFIER "double"
+#define BYTE_TYPE_SPECIFIER "i8"
+#define SHORT_TYPE_SPECIFIER "i16"
+#define INT_TYPE_SPECIFIER "i32"
+#define LONG_TYPE_SPECIFIER "i64"
+#define FLOAT_TYPE_SPECIFIER "f32"
+#define DOUBLE_TYPE_SPECIFIER "f64"
 #define STRING_TYPE_SPECIFIER "string"
 
 typedef int data_type_t;
@@ -32,6 +32,8 @@ struct parse_result {
 };
 
 typedef struct parse_result parse_result_s;
+
+char* data_type_to_string(data_type_t type);
 
 vector_s* parse_lines(int fd);
 

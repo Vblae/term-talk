@@ -5,6 +5,8 @@
 
 #define VECTOR_DEFAULT_RESERVE 0x08
 
+#define vector_get_t(type, vector, idx) ((type*) vector_get((vector), (idx)))
+
 typedef int (*vector_item_comparator_f)(void*, void*);
 
 typedef int (*vector_item_allocator_f)(void*);
