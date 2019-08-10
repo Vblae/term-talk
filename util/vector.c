@@ -17,7 +17,7 @@ struct vector_wrapper {
 
 typedef struct vector_wrapper vector_wrapper_s;
 
-static int  __vector_default_allocator(void* item) {
+static int32_t  __vector_default_allocator(void* item) {
   return 1;
 }
 
@@ -25,7 +25,7 @@ static void __vector_default_deallocator(void* item) {
 
 }
 
-int __vector_double_capacity(vector_wrapper_s* vector) {
+int32_t __vector_double_capacity(vector_wrapper_s* vector) {
   void* new_data_block = malloc(2 * vector->vec.cap * vector->__item_size);
   void* old_data_block = vector->__data_block;
   if(!new_data_block)
@@ -35,7 +35,7 @@ int __vector_double_capacity(vector_wrapper_s* vector) {
   vector->__data_block = new_data_block;
   vector->vec.cap *= 2;
 
-  for(int i = vector->vec.len; i < vector->vec.cap; i++) {
+  for(int32_t i = vector->vec.len; i < vector->vec.cap; i++) {
     memset(&vector->__data_block[i * vector->__item_size], 0, vector->__item_size);
   }
 
@@ -43,35 +43,35 @@ int __vector_double_capacity(vector_wrapper_s* vector) {
   return 1;
 }
 
-int vector_byte_comparator(void* item1, void* item2) {
+int32_t vector_byte_comparator(void* item1, void* item2) {
   return *((char*) item1) - *((char*) item2);
 }
 
-int vector_short_comparator(void* item1, void* item2) {
+int32_t vector_short_comparator(void* item1, void* item2) {
   return *((short*) item1) - *((short*) item2);
 }
 
-int vector_int_comparator(void* item1, void* item2) {
-  return *((int*) item1) - *((int*) item2);
+int32_t vector_int_comparator(void* item1, void* item2) {
+  return *((int32_t*) item1) - *((int*) item2);
 }
 
-int vector_long_comparator(void* item1, void* item2) {
-  return *((long*) item1) - *((int*) item2);
+int32_t vector_long_comparator(void* item1, void* item2) {
+  return *((long*) item1) - *((int32_t*) item2);
 }
 
-int vector_float_comparator(void* item1, void* item2) {
+int32_t vector_float_comparator(void* item1, void* item2) {
   return *((float*) item1) - *((float*) item2);
 }
 
-int vector_double_comparator(void* item1, void* item2) {
+int32_t vector_double_comparator(void* item1, void* item2) {
   return *((double*) item1) - *((double*) item2);
 }
 
-int vector_pointer_comparator(void* item1, void* item2) {
+int32_t vector_pointer_comparator(void* item1, void* item2) {
   return item1 - item2;
 }
 
-int vector_string_comparator(void* item1, void* item2) {
+int32_t vector_string_comparator(void* item1, void* item2) {
   if(!*((char**) item1) && !*((char**) item2))
       return 0;
 
@@ -140,7 +140,7 @@ vector_s* vector_create(
 vector_s* vector_of_byte_create(size_t reserve) {
   return vector_create_with_allocators(
     reserve,
-    sizeof(char),
+    sizeof(int8_t),
     &__vector_default_allocator,
     &__vector_default_deallocator
   );
@@ -149,7 +149,7 @@ vector_s* vector_of_byte_create(size_t reserve) {
 vector_s* vector_of_short_create(size_t reserve) {
   return vector_create_with_allocators(
     reserve,
-    sizeof(short),
+    sizeof(int16_t),
     &__vector_default_allocator,
     &__vector_default_deallocator
   );
@@ -158,7 +158,7 @@ vector_s* vector_of_short_create(size_t reserve) {
 vector_s* vector_of_int_create(size_t reserve) {
   return vector_create_with_allocators(
     reserve,
-    sizeof(int),
+    sizeof(int32_t),
     &__vector_default_allocator,
     &__vector_default_deallocator
   );
@@ -167,7 +167,7 @@ vector_s* vector_of_int_create(size_t reserve) {
 vector_s* vector_of_long_create(size_t reserve) {
   return vector_create_with_allocators(
     reserve,
-    sizeof(long),
+    sizeof(int64_t),
     &__vector_default_allocator,
     &__vector_default_deallocator
   );
@@ -214,7 +214,7 @@ void vector_free(vector_s* vector) {
     return;
   
   vector_wrapper_s* vector_wrapper = (vector_wrapper_s*) vector;
-  for(int i = 0; i < vector_wrapper->vec.len; i++) {
+  for(int32_t i = 0; i < vector_wrapper->vec.len; i++) {
     vector_wrapper->__deallocator_funct(  
       &vector_wrapper->__data_block[i * vector_wrapper->__item_size]
     );
@@ -223,7 +223,7 @@ void vector_free(vector_s* vector) {
   free(vector_wrapper->__data_block);
 }
 
-int vector_push(vector_s* vector, void* item) {
+int32_t vector_push(vector_s* vector, void* item) {
   if(!vector) {
     printf("error: vector: cannot push to null vector\n");
     return 0;
@@ -247,7 +247,7 @@ int vector_push(vector_s* vector, void* item) {
     &vector_wrapper->__data_block[vector->len * vector_wrapper->__item_size];
 
   memcpy(free_item_spot, item, vector_wrapper->__item_size);
-  int success = vector_wrapper->__allocator_funct(free_item_spot);
+  int32_t success = vector_wrapper->__allocator_funct(free_item_spot);
   if(success)
     vector->len++;
   else
@@ -256,7 +256,7 @@ int vector_push(vector_s* vector, void* item) {
   return success;
 }
 
-int vector_pop(vector_s* vector) {
+int32_t vector_pop(vector_s* vector) {
   if(!vector) {
     printf("error: vector: cannot pop from a null vector\n");
     return 0;
@@ -289,7 +289,7 @@ void* vector_back(vector_s* vector) {
   return &vector_wrapper->__data_block[(vector->len - 1) * vector_wrapper->__item_size];
 }
 
-void* vector_get(vector_s* vector, int idx) {
+void* vector_get(vector_s* vector, int32_t idx) {
   if(!vector)
     return 0;
 
@@ -300,12 +300,12 @@ void* vector_get(vector_s* vector, int idx) {
   return &vector_wrapper->__data_block[idx * vector_wrapper->__item_size];
 }
 
-int vector_find(vector_s* vector, void* val, vector_item_comparator_f comp_funct) {
+int32_t vector_find(vector_s* vector, void* val, vector_item_comparator_f comp_funct) {
   if(!vector || !val)
     return -1;
   
   vector_wrapper_s* vector_wrapper = (vector_wrapper_s*) vector;
-  for(int i = 0; i < vector->len; i++) {
+  for(int32_t i = 0; i < vector->len; i++) {
     void* other = &vector_wrapper->__data_block[i * vector_wrapper->__item_size];
     if(comp_funct(val, other) == 0)
       return i;

@@ -8,9 +8,9 @@
 
 #define vector_get_t(type, vector, idx) ((type*) vector_get((vector), (idx)))
 
-typedef int (*vector_item_comparator_f)(void*, void*);
+typedef int32_t (*vector_item_comparator_f)(void*, void*);
 
-typedef int (*vector_item_allocator_f)(void*);
+typedef int32_t (*vector_item_allocator_f)(void*);
 
 typedef void (*vector_item_deallocator_f)(void*);
 
