@@ -4,6 +4,11 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#define tree_map_create_of(key_type, val_type, comp_funct) \
+  tree_map_create(sizeof(key_type), sizeof(val_type), (comp_funct))
+
+#define tree_map_get_of(type, map, key) ((type*) tree_map_get((map), (key)))
+
 typedef int32_t (*tree_map_key_comparator_f)(void*, void*);
 typedef int32_t (*tree_map_val_comparator_f)(void*, void*);
 

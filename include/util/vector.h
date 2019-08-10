@@ -6,7 +6,7 @@
 
 #define VECTOR_DEFAULT_RESERVE 0x08
 
-#define vector_create_of(type, reserve) vector_create((reserve), sizeof((type)))
+#define vector_create_of(type, reserve) vector_create((reserve), sizeof(type))
 #define vector_back_of(type, vector) ((type*) vector_back((vector)))
 #define vector_get_of(type, vector, idx) ((type*) vector_get((vector), (idx)))
 

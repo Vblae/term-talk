@@ -60,7 +60,7 @@ void float_val_printer(void* val) {
 
 static void __test_tree_map() {
   printf("calling tree_map_create() of int32_t => float\n");
-  tree_map_s* map = tree_map_create(sizeof(int32_t), sizeof(float), &int_comparator);
+  tree_map_s* map = tree_map_create_of(int32_t, float, &int_comparator);
   printf("returned from tree_map_create() with %p\n", map);
   
   int32_t keys[] = {12, 567, 43, 114, 8, 6, 3, 4};
@@ -75,12 +75,12 @@ static void __test_tree_map() {
   printf("finish inserting\n");
   printf("calling tree_map_get() with:\n");
   for(int32_t i = 0; i < 8; i++) {
-    void* result = tree_map_get(map, &keys[i]);
+    float* result = tree_map_get_of(float, map, &keys[i]);
     printf("query key: %d expect: %f got %p -> ", keys[i], vals[i], result);
     if(!result)
       printf("None\n");
     else
-      printf("%f\n", *((float*) result));
+      printf("%f\n", *result);
   }
   tree_map_free(map);
 }
