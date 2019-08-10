@@ -530,7 +530,7 @@ vector_s* parse_lines(int32_t fd) {
     0,
     sizeof(parse_result_s),
     0,
-    __parse_line_result_deallocator
+    &__parse_line_result_deallocator
   );
 
   int32_t line_num = 1;
