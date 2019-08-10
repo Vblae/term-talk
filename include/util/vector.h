@@ -83,5 +83,7 @@ int32_t vector_find(vector_s* vector, void* val, vector_item_comparator_f comp_f
 
 void vector_clear(vector_s* vector);
 
+void vector_sort(vector_s* vector, vector_item_comparator_f comp_funct);
+
 #endif
 

@@ -323,3 +323,55 @@ void vector_clear(vector_s* vector) {
   vector->len = 0;
 }
 
+static void __vector_swap(vector_wrapper_s* vector, int32_t i, int32_t j) {
+  char temp[vector->__item_size];
+  void* ptr_i = &vector->__data_block[i * vector->__item_size];
+  void* ptr_j = &vector->__data_block[j * vector->__item_size];
+
+  memcpy(temp, ptr_i, vector->__item_size);
+  memcpy(ptr_i, ptr_j, vector->__item_size);
+  memcpy(ptr_j, temp, vector->__item_size);
+}
+
+static int32_t __vector_quick_sort_partition(
+  vector_wrapper_s* vector,
+  int32_t lo,
+  int32_t hi,
+  vector_item_comparator_f comp_funct
+) {
+  void* pivot = &vector->__data_block[hi * vector->__item_size];
+  int32_t i = lo - 1;
+  for(int32_t j = lo; j <= hi - 1; j++) {
+    void* other = &vector->__data_block[j * vector->__item_size];
+    if(comp_funct(other, pivot) <= 0)
+      __vector_swap(vector, ++i, j);
+  }
+
+  __vector_swap(vector, i + 1, hi);
+  return i + 1;
+}
+
+static inline void __vector_quick_sort(
+  vector_wrapper_s* vector,
+  int32_t lo,
+  int32_t hi,
+  vector_item_comparator_f comp_funct
+) {
+  if(lo < hi) {
+    int32_t pivot = __vector_quick_sort_partition(vector, lo, hi, comp_funct);
+    __vector_quick_sort(vector, lo, pivot - 1, comp_funct);
+    __vector_quick_sort(vector, pivot + 1, hi, comp_funct);
+  }
+}
+
+static inline void __vector_sort(
+  vector_wrapper_s* vector,
+  vector_item_comparator_f comp_funct
+) {
+  __vector_quick_sort(vector, 0, vector->vec.len - 1, comp_funct);
+}
+
+void vector_sort(vector_s* vector, vector_item_comparator_f comp_funct) {
+  __vector_sort((vector_wrapper_s*) vector, comp_funct);
+}
+

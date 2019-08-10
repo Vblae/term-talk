@@ -119,6 +119,8 @@ static void __print_config_var(config_var_s* conf_var) {
     case STRING_TYPE:
       printf("%s\n", conf_var->string_val);
       break;
+    default:
+      printf("\n");
   }
 }
 
@@ -137,8 +139,19 @@ config_s* create_config() {
   config_s* conf = (config_s*) malloc(sizeof(config_s));
   conf->vars = 0;
   conf->tail = 0;
-
   return conf;
+}
+
+int32_t __vector_config_var_comparator(void* config_var0, void* config_var1) {
+  printf(
+    "comparator call %s vs. %s\n",
+    (*((config_var_s**)config_var0))->name,
+    (*((config_var_s**)config_var1))->name
+  );
+  return strcmp(
+    (*((config_var_s**) config_var0))->name,
+    (*((config_var_s**) config_var1))->name
+  );
 }
 
 void config_free(config_s* conf) {
@@ -184,6 +197,14 @@ config_s* load_config(char* config_file_path) {
     return 0;
   }
 
+  vector_s* conf_vars = vector_create(parse_results->len, sizeof(config_var_s*));
+  if(!conf_vars) {
+    printf("error: failes to allocate memory for config var vector\n");
+    vector_free(parse_results);
+    config_free(conf);
+    return 0;
+  }
+
   for(int32_t i = 0; i < parse_results->len; i++) {
     parse_result_s* parse_res = vector_get_of(parse_result_s, parse_results, i);
     config_var_s* conf_var = __create_config_var(
@@ -192,7 +213,14 @@ config_s* load_config(char* config_file_path) {
       parse_res->var_data,
       parse_res->var_type
     );
-    __add_config_var(conf, conf_var);
+
+    vector_push(conf_vars, &conf_var);
+  }
+
+  vector_sort(conf_vars, __vector_config_var_comparator);
+  for(int32_t i = 0; i < conf_vars->len; i++) {
+    config_var_s** conf_var = vector_get_of(config_var_s*, conf_vars, i);
+    __add_config_var(conf, *conf_var);
   }
   
   __print_config(conf);
