@@ -1,5 +1,6 @@
 i8 test_byte: -10
-i16 port: -32769
+u16 port: 32769
+u16 bad_type: -123
 
 i32 test_int: -78
 i64 test_long: 2000

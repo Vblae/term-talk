@@ -29,6 +29,18 @@ static config_var_s* __create_config_var(char* name, void* data, data_type_t typ
     case INT64_TYPE:
       conf_var->int64_val = atol(data);
       break;
+    case UINT8_TYPE:
+      conf_var->uint8_val = (uint8_t) atol(data);
+     break;
+    case UINT16_TYPE:
+      conf_var->uint16_val = (uint16_t) atol(data);;
+      break;
+    case UINT32_TYPE:
+      conf_var->uint32_val = (uint32_t) atol(data);
+      break;
+    case UINT64_TYPE:
+      conf_var->uint64_val = (uint64_t) atol(data);
+      break;
     case FLOAT_TYPE:
       conf_var->float_val = (float) atof(data);
       break;
@@ -120,6 +132,18 @@ config_s* load_config(char* config_file_path) {
         break;
       case INT64_TYPE:
         printf("%lli\n", conf_var->int64_val);
+        break;
+      case UINT8_TYPE:
+        printf("%hhu\n", conf_var->uint8_val);
+        break;
+      case UINT16_TYPE:
+        printf("%hu\n", conf_var->uint16_val);
+        break;
+      case UINT32_TYPE:
+        printf("%u\n", conf_var->uint32_val);
+        break;
+      case UINT64_TYPE:
+        printf("%llu\n", conf_var->uint64_val);
         break;
       case FLOAT_TYPE:
         printf("%f\n", conf_var->float_val);

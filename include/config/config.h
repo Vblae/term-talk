@@ -18,6 +18,10 @@ struct config_var {
     int16_t int16_val;
     int32_t int32_val;
     int64_t int64_val;
+    int8_t uint8_val;
+    int16_t uint16_val;
+    int32_t uint32_val;
+    int64_t uint64_val;
     float float_val;
     double double_val;
     char* string_val;

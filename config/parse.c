@@ -58,6 +58,18 @@ static data_type_t __is_type_specifier(char* type) {
   if(strcmp(type, INT64_TYPE_SPECIFIER) == 0)
     return INT64_TYPE;
 
+  if(strcmp(type, UINT8_TYPE_SPECIFIER) == 0)
+    return UINT8_TYPE;
+
+  if(strcmp(type, UINT16_TYPE_SPECIFIER) == 0)
+    return UINT16_TYPE;
+
+  if(strcmp(type, UINT32_TYPE_SPECIFIER) == 0)
+    return UINT32_TYPE;
+
+  if(strcmp(type, UINT64_TYPE_SPECIFIER) == 0)
+    return UINT64_TYPE;
+  
   if(strcmp(type, FLOAT_TYPE_SPECIFIER) == 0)
     return FLOAT_TYPE;
 
@@ -147,6 +159,14 @@ char* data_type_to_string(data_type_t type) {
       return INT32_TYPE_SPECIFIER;
     case INT64_TYPE:
       return INT64_TYPE_SPECIFIER;
+    case UINT8_TYPE:
+      return UINT8_TYPE_SPECIFIER;
+    case UINT16_TYPE:
+      return UINT16_TYPE_SPECIFIER;
+    case UINT32_TYPE:
+      return UINT32_TYPE_SPECIFIER;
+    case UINT64_TYPE:
+      return UINT64_TYPE_SPECIFIER;
     case FLOAT_TYPE:
       return FLOAT_TYPE_SPECIFIER;
     case DOUBLE_TYPE:
@@ -159,8 +179,9 @@ char* data_type_to_string(data_type_t type) {
 }
 
 static inline data_type_t __soft_type_of(char* value) {
-  if(__is_integer(value))
+  if(__is_integer(value)) {
     return INT32_TYPE;
+  }
 
   if(__is_real_number(value))
     return FLOAT_TYPE;
@@ -401,6 +422,14 @@ static void __match_var_decleration(
     case INT64_TYPE:
       if(!__is_integer(*value_as_string))
         type_error = 1; 
+
+      break;
+    case UINT8_TYPE:
+    case UINT16_TYPE:
+    case UINT32_TYPE:
+    case UINT64_TYPE:
+      if(!__is_integer(*value_as_string) || __is_negative_sign(**value_as_string))
+        type_error = 1;
 
       break;
     case FLOAT_TYPE:
