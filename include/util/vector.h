@@ -2,6 +2,7 @@
 #define __VECTOR_H__
 
 #include <stddef.h>
+#include <stdint.h>
 
 #define VECTOR_DEFAULT_RESERVE 0x08
 
@@ -22,21 +23,21 @@ struct vector {
 
 typedef struct vector vector_s;
 
-int vector_byte_comparator(void* item1, void* item2);
+int32_t vector_byte_comparator(void* item1, void* item2);
 
-int vector_short_comparator(void* item1, void* item2);
+int32_t vector_short_comparator(void* item1, void* item2);
 
-int vector_int_comparator(void* item1, void* item2);
+int32_t vector_int_comparator(void* item1, void* item2);
 
-int vector_long_comparator(void* item1, void* item2);
+int32_t vector_long_comparator(void* item1, void* item2);
 
-int vector_float_comparator(void* item1, void* item2);
+int32_t vector_float_comparator(void* item1, void* item2);
 
-int vector_double_comparator(void* item1, void* item2);
+int32_t vector_double_comparator(void* item1, void* item2);
 
-int vector_pointer_comparator(void* item1, void* item2);
+int32_t vector_pointer_comparator(void* item1, void* item2);
 
-int vector_string_comparator(void* item1, void* item2);
+int32_t vector_string_comparator(void* item1, void* item2);
 
 vector_s* vector_create_with_allocators(
   size_t reserve,
@@ -68,15 +69,15 @@ vector_s* vector_of_string_create(size_t reserve);
 
 void vector_free(vector_s* vector);
 
-int vector_push(vector_s* vector, void* item);
+int32_t vector_push(vector_s* vector, void* item);
 
-int vector_pop(vector_s* vector);
+int32_t vector_pop(vector_s* vector);
 
 void* vector_top(vector_s* vector);
 
-void* vector_get(vector_s* vector, int idx);
+void* vector_get(vector_s* vector, int32_t idx);
 
-int vector_find(vector_s* vector, void* val, vector_item_comparator_f comp_funct);
+int32_t vector_find(vector_s* vector, void* val, vector_item_comparator_f comp_funct);
 
 void vector_clear(vector_s* vector);
 

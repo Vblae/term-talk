@@ -17,17 +17,17 @@ static config_var_s* __create_config_var(char* name, void* data, data_type_t typ
   conf_var->name[len] = 0;
 
   switch(type) {
-    case BYTE_TYPE:
-      conf_var->byte_val = (char) atol(data);
+    case INT8_TYPE:
+      conf_var->int8_val = (int8_t) atol(data);
      break;
-    case SHORT_TYPE:
-      conf_var->short_val = (short) atol(data);;
+    case INT16_TYPE:
+      conf_var->int16_val = (int16_t) atol(data);;
       break;
-    case INT_TYPE:
-      conf_var->int_val = (int) atol(data);
+    case INT32_TYPE:
+      conf_var->int32_val = (int32_t) atol(data);
       break;
-    case LONG_TYPE:
-      conf_var->long_val = atol(data);
+    case INT64_TYPE:
+      conf_var->int64_val = atol(data);
       break;
     case FLOAT_TYPE:
       conf_var->float_val = (float) atof(data);
@@ -89,7 +89,7 @@ config_s* load_config(char* config_file_path) {
     return 0;
   }
 
-  int fd = open(config_file_path, O_RDONLY);
+  int32_t fd = open(config_file_path, O_RDONLY);
   if(fd == -1) {
     m_log_error("error: could not open file '%s'\n", config_file_path);
     return 0;
@@ -97,7 +97,7 @@ config_s* load_config(char* config_file_path) {
   
   vector_s* parse_results = parse_lines(fd);
   config_s* conf = create_config();
-  for(int i = 0; i < parse_results->len; i++) {
+  for(int32_t i = 0; i < parse_results->len; i++) {
     parse_result_s* parse_res = vector_get_t(parse_result_s, parse_results, i);
     config_var_s* conf_var = __create_config_var(
       parse_res->var_name,
@@ -109,17 +109,17 @@ config_s* load_config(char* config_file_path) {
     printf(" type: %s\n", data_type_to_string(conf_var->type));
     printf(" value: ");
     switch(conf_var->type) {
-      case BYTE_TYPE:
-        printf("%hhi\n", conf_var->byte_val);
+      case INT8_TYPE:
+        printf("%hhi\n", conf_var->int8_val);
         break;
-      case SHORT_TYPE:
-        printf("%hi\n", conf_var->short_val);
+      case INT16_TYPE:
+        printf("%hi\n", conf_var->int16_val);
         break;
-      case INT_TYPE:
-        printf("%d\n", conf_var->int_val);
+      case INT32_TYPE:
+        printf("%d\n", conf_var->int32_val);
         break;
-      case LONG_TYPE:
-        printf("%li\n", conf_var->long_val);
+      case INT64_TYPE:
+        printf("%lli\n", conf_var->int64_val);
         break;
       case FLOAT_TYPE:
         printf("%f\n", conf_var->float_val);
@@ -136,8 +136,4 @@ config_s* load_config(char* config_file_path) {
   vector_free(parse_results);
   return conf;
 }
-
-
-
-
 

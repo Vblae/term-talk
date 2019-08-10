@@ -4,7 +4,7 @@
 #include "config/config.h"
 #include "util/vector.h"
 
-int main(int argc, char** argv) {
+int32_t main(int argc, char** argv) {
 
   config_s* conf = load_config(argv[1]);
   printf("p: %p\n", conf);
@@ -17,10 +17,10 @@ int main(int argc, char** argv) {
     (char*) 0,
     "str 3"
   };
-  for(int i = 0; i < 4; i++) {
+  for(int32_t i = 0; i < 4; i++) {
     vector_push(vector, &test[i]);
   }
-  for(int i = 0; i < vector->len; i++) {
+  for(int32_t i = 0; i < vector->len; i++) {
     char** val = (char**) vector_get(vector, i);
     printf("og:%p->%s new:%p->%s\n", test[i], test[i], *val, *val);
   }
@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
   printf("top: %s\n", *((char**) vector_top(vector)));
   
   char** str = &test[1];
-  int idx = vector_find(vector, str, vector_string_comparator);
+  int32_t idx = vector_find(vector, str, vector_string_comparator);
   printf("idx: %d\n", idx);
   vector_free(vector);
   printf("vector test end ------------------\n");

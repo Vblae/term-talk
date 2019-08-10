@@ -13,50 +13,50 @@
 
 #define BUFF_LEN 1024
 
-static inline int __is_alpha(char c) {
+static inline int32_t __is_alpha(char c) {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
 
-static inline int __is_digit(char c) {
+static inline int32_t __is_digit(char c) {
   return c >= '0' && c <= '9';
 }
 
-static inline int __is_underscore(char c) {
+static inline int32_t __is_underscore(char c) {
   return c == '_';
 }
 
-static inline int __is_colon(char c) {
+static inline int32_t __is_colon(char c) {
   return c == ':';
 }
 
-static inline int __is_point(char c) {
+static inline int32_t __is_point(char c) {
   return c == '.';
 }
 
-static inline int __is_negative_sign(char c) {
+static inline int32_t __is_negative_sign(char c) {
   return c == '-';
 }
 
-static inline int __is_single_quote(char c) {
+static inline int32_t __is_single_quote(char c) {
   return c == '\'';
 }
 
-static inline int __is_white_space(char c) {
+static inline int32_t __is_white_space(char c) {
   return c == ' ' || c == '\r' || c == '\t';
 }
 
 static data_type_t __is_type_specifier(char* type) {
-  if(strcmp(type, BYTE_TYPE_SPECIFIER) == 0)
-    return BYTE_TYPE;
+  if(strcmp(type, INT8_TYPE_SPECIFIER) == 0)
+    return INT8_TYPE;
 
-  if(strcmp(type, SHORT_TYPE_SPECIFIER) == 0)
-    return SHORT_TYPE;
+  if(strcmp(type, INT16_TYPE_SPECIFIER) == 0)
+    return INT16_TYPE;
 
-  if(strcmp(type, INT_TYPE_SPECIFIER) == 0)
-    return INT_TYPE;
+  if(strcmp(type, INT32_TYPE_SPECIFIER) == 0)
+    return INT32_TYPE;
 
-  if(strcmp(type, LONG_TYPE_SPECIFIER) == 0)
-    return LONG_TYPE;
+  if(strcmp(type, INT64_TYPE_SPECIFIER) == 0)
+    return INT64_TYPE;
 
   if(strcmp(type, FLOAT_TYPE_SPECIFIER) == 0)
     return FLOAT_TYPE;
@@ -70,7 +70,7 @@ static data_type_t __is_type_specifier(char* type) {
   return NONE_TYPE;
 }
 
-static int __is_name(char* id) {
+static int32_t __is_name(char* id) {
   if(!id|| !*id)
     return 0;
 
@@ -87,7 +87,7 @@ static int __is_name(char* id) {
   return !__is_type_specifier(id);
 }
 
-static int __is_integer(char* integer) {
+static int32_t __is_integer(char* integer) {
   if(!integer || !*integer)
     return 0;
 
@@ -104,12 +104,12 @@ static int __is_integer(char* integer) {
   return 1;
 }
 
-static int __is_real_number(char* real) {
+static int32_t __is_real_number(char* real) {
   if(!real || !*real)
     return 0;
 
   char* it = real;
-  int saw_decimal_point = 0;
+  int32_t saw_decimal_point = 0;
   while(*it) {
     if(it == real && !__is_digit(*it))
       return 0;
@@ -126,7 +126,7 @@ static int __is_real_number(char* real) {
   return 1;
 }
 
-static int __is_string_literal(char* string_literal) {
+static int32_t __is_string_literal(char* string_literal) {
   if(!string_literal)
     return 0;
   
@@ -139,14 +139,14 @@ static int __is_string_literal(char* string_literal) {
 
 char* data_type_to_string(data_type_t type) {
   switch(type) {
-    case BYTE_TYPE:
-      return BYTE_TYPE_SPECIFIER;
-    case SHORT_TYPE:
-      return SHORT_TYPE_SPECIFIER;
-    case INT_TYPE:
-      return INT_TYPE_SPECIFIER;
-    case LONG_TYPE:
-      return LONG_TYPE_SPECIFIER;
+    case INT8_TYPE:
+      return INT8_TYPE_SPECIFIER;
+    case INT16_TYPE:
+      return INT16_TYPE_SPECIFIER;
+    case INT32_TYPE:
+      return INT32_TYPE_SPECIFIER;
+    case INT64_TYPE:
+      return INT64_TYPE_SPECIFIER;
     case FLOAT_TYPE:
       return FLOAT_TYPE_SPECIFIER;
     case DOUBLE_TYPE:
@@ -160,7 +160,7 @@ char* data_type_to_string(data_type_t type) {
 
 static inline data_type_t __soft_type_of(char* value) {
   if(__is_integer(value))
-    return INT_TYPE;
+    return INT32_TYPE;
 
   if(__is_real_number(value))
     return FLOAT_TYPE;
@@ -170,7 +170,7 @@ static inline data_type_t __soft_type_of(char* value) {
 
   return NONE_TYPE;
 }
-static int __tokenize_line(
+static int32_t __tokenize_line(
   char* line,
   size_t line_len,
   size_t line_num,
@@ -194,18 +194,18 @@ static int __tokenize_line(
   char* token_start= 0;
   size_t token_len = 0;
   
-  const int INVALID_STATE = -3;
-  const int PUSH_STATE = -2;
-  const int INIT_STATE = -1;
-  const int START_STATE = 0;
-  const int FORM_WORD = 1;
-  const int FORM_NUMBER = 2;
-  const int FORM_SYMBOL = 3;
-  const int FORM_STRING = 4;
-  const int SKIP_WHITE_SPACE = 5;
+  const int32_t INVALID_STATE = -3;
+  const int32_t PUSH_STATE = -2;
+  const int32_t INIT_STATE = -1;
+  const int32_t START_STATE = 0;
+  const int32_t FORM_WORD = 1;
+  const int32_t FORM_NUMBER = 2;
+  const int32_t FORM_SYMBOL = 3;
+  const int32_t FORM_STRING = 4;
+  const int32_t SKIP_WHITE_SPACE = 5;
 
-  int state = START_STATE;
-  int next_state = START_STATE;
+  int32_t state = START_STATE;
+  int32_t next_state = START_STATE;
   while(it < end) {
     switch(state) {
       case PUSH_STATE:
@@ -332,7 +332,7 @@ static void __match_var_decleration(
   parse_result_s* parse_res,
   vector_s* vector
 ) {
-  int success = __tokenize_line(line, line_len, line_num, vector);
+  int32_t success = __tokenize_line(line, line_len, line_num, vector);
   if(!success) {
     __make_none_var(parse_res);
     return;
@@ -343,7 +343,7 @@ static void __match_var_decleration(
   char** colon = vector_get_t(char*, vector, 2);
   char** value_as_string = vector_get_t(char*, vector, 3);
   
-  int var_type;
+  data_type_t var_type;
   if(!(var_type = __is_type_specifier(*type_specifier))) {
     m_log_error(
       "error: parser: invalid type '%s' in line %lu\n==>%s\n",
@@ -393,12 +393,12 @@ static void __match_var_decleration(
   }
 
   char* type_received = data_type_to_string(__soft_type_of(*value_as_string));
-  int type_error = 0;
+  int32_t type_error = 0;
   switch(var_type) {
-    case BYTE_TYPE:
-    case SHORT_TYPE:
-    case INT_TYPE:
-    case LONG_TYPE:
+    case INT8_TYPE:
+    case INT16_TYPE:
+    case INT32_TYPE:
+    case INT64_TYPE:
       if(!__is_integer(*value_as_string))
         type_error = 1; 
 
@@ -456,7 +456,7 @@ void __parse_line(
   else
     __match_var_decleration(line, line_len, line_num, parse_res, vector);
 
-  for(int i = 0; i < vector->len; i++) {
+  for(int32_t i = 0; i < vector->len; i++) {
     char** ptr = vector_get_t(char*, vector, i);
     free(*ptr);
   }
@@ -466,8 +466,8 @@ void __parse_line(
 
 static void __shift_buff_left(
   char* buff,
-  int start_index,
-  int shift_amnt,
+  int32_t start_index,
+  int32_t shift_amnt,
   size_t buff_len
 ) {
   if(shift_amnt >= buff_len) {
@@ -475,7 +475,7 @@ static void __shift_buff_left(
     return;
   }
 
-  for(int i = 0; i < shift_amnt; i++) {
+  for(int32_t i = 0; i < shift_amnt; i++) {
     buff[i] = buff[start_index + i];
   }
 
@@ -491,7 +491,7 @@ static void __parse_line_result_deallocator(void* parse_res) {
   free(parse_res_ptr->var_data);
 }
 
-vector_s* parse_lines(int fd) {
+vector_s* parse_lines(int32_t fd) {
   size_t buff_len = BUFF_LEN;
   char buff[buff_len];
   memset(&buff, 0, buff_len);
@@ -504,7 +504,7 @@ vector_s* parse_lines(int fd) {
     __parse_line_result_deallocator
   );
 
-  int line_num = 1;
+  int32_t line_num = 1;
   size_t buff_offset = 0;
   while(1) {
     size_t bytes_read = 0;
@@ -515,8 +515,8 @@ vector_s* parse_lines(int fd) {
         buff_len = bytes_read + bytes_overflowed;
       
       buff_offset = 0;
-      int nl_index = 0;
-      int saw_nl = 0;
+      int32_t nl_index = 0;
+      int32_t saw_nl = 0;
       while(
         (nl_index = index_of('\n', &buff[buff_offset], buff_len - buff_offset)) != -1
       ) {
