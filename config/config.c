@@ -75,6 +75,61 @@ static void __add_config_var(config_s* conf, config_var_s* conf_var) {
     __add_config_var_tail(conf, conf_var);
 }
 
+static void __print_config_var(config_var_s* conf_var) {
+  if(!conf_var)
+    return;
+
+  printf("config var [%p]:\n name: %s\n", conf_var, conf_var->name);
+  printf(" type: %s\n", data_type_to_string(conf_var->type));
+  printf(" value: ");
+  switch(conf_var->type) {
+    case INT8_TYPE:
+      printf("%hhi\n", conf_var->int8_val);
+      break;
+    case INT16_TYPE:
+      printf("%hi\n", conf_var->int16_val);
+      break;
+    case INT32_TYPE:
+      printf("%d\n", conf_var->int32_val);
+      break;
+    case INT64_TYPE:
+      printf("%lli\n", conf_var->int64_val);
+      break;
+    case UINT8_TYPE:
+      printf("%hhu\n", conf_var->uint8_val);
+      break;
+    case UINT16_TYPE:
+      printf("%hu\n", conf_var->uint16_val);
+      break;
+    case UINT32_TYPE:
+      printf("%u\n", conf_var->uint32_val);
+      break;
+    case UINT64_TYPE:
+      printf("%llu\n", conf_var->uint64_val);
+      break;
+    case FLOAT_TYPE:
+      printf("%f\n", conf_var->float_val);
+      break;
+    case DOUBLE_TYPE:
+      printf("%f\n", conf_var->double_val);
+      break;
+    case STRING_TYPE:
+      printf("%s\n", conf_var->string_val);
+      break;
+  }
+}
+
+static void __print_config(config_s* config) {
+  if(!config)
+    return;
+
+  config_var_s* it = config->vars;
+  while(it) {
+    __print_config_var(it);
+    it = it->next;
+  }
+}
+
 config_s* create_config() {
   config_s* conf = (config_s*) malloc(sizeof(config_s));
   conf->vars = 0;
@@ -117,46 +172,9 @@ config_s* load_config(char* config_file_path) {
       parse_res->var_type
     );
     __add_config_var(conf, conf_var);
-    printf("config var [%p]:\n name: %s\n", conf_var, conf_var->name);
-    printf(" type: %s\n", data_type_to_string(conf_var->type));
-    printf(" value: ");
-    switch(conf_var->type) {
-      case INT8_TYPE:
-        printf("%hhi\n", conf_var->int8_val);
-        break;
-      case INT16_TYPE:
-        printf("%hi\n", conf_var->int16_val);
-        break;
-      case INT32_TYPE:
-        printf("%d\n", conf_var->int32_val);
-        break;
-      case INT64_TYPE:
-        printf("%lli\n", conf_var->int64_val);
-        break;
-      case UINT8_TYPE:
-        printf("%hhu\n", conf_var->uint8_val);
-        break;
-      case UINT16_TYPE:
-        printf("%hu\n", conf_var->uint16_val);
-        break;
-      case UINT32_TYPE:
-        printf("%u\n", conf_var->uint32_val);
-        break;
-      case UINT64_TYPE:
-        printf("%llu\n", conf_var->uint64_val);
-        break;
-      case FLOAT_TYPE:
-        printf("%f\n", conf_var->float_val);
-        break;
-      case DOUBLE_TYPE:
-        printf("%f\n", conf_var->double_val);
-        break;
-      case STRING_TYPE:
-        printf("%s\n", conf_var->string_val);
-        break;
-    }
   }
   
+  __print_config(conf);
   vector_free(parse_results);
   return conf;
 }
