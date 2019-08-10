@@ -4,9 +4,8 @@
 #include "config/config.h"
 #include "util/vector.h"
 
-int32_t main(int argc, char** argv) {
-
-  config_s* conf = load_config(argv[1]);
+void __test(char* config_file_path) {
+  config_s* conf = load_config(config_file_path);
   printf("p: %p\n", conf);
 
   config_var_s* _5 = config_get(conf, "_5");
@@ -40,6 +39,10 @@ int32_t main(int argc, char** argv) {
   printf("idx: %d\n", idx);
   vector_free(vector);
   printf("vector test end ------------------\n");
+}
+
+int32_t main(int argc, char** argv) {
+  __test(argv[1]);
   return 0;
 }
 
