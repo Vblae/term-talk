@@ -429,8 +429,17 @@ static void __match_var_decleration(
     return;
   }
 
+  char* var_data_as_string = 0;
+  if(var_type != STRING_TYPE) {
+    var_data_as_string = strdup(*value_as_string);
+  } else {
+    size_t len = strlen(*value_as_string);
+    (*value_as_string)[len - 1] = 0;
+    var_data_as_string = strdup((*value_as_string) + 1);
+  }
+
   parse_res->var_name = strdup(*var_name);
-  parse_res->var_data = strdup(*value_as_string);
+  parse_res->var_data = var_data_as_string;
   parse_res->var_type = var_type;
   parse_res->success = 1;
 }
