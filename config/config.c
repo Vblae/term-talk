@@ -143,11 +143,6 @@ config_s* create_config() {
 }
 
 int32_t __vector_config_var_comparator(void* config_var0, void* config_var1) {
-  printf(
-    "comparator call %s vs. %s\n",
-    (*((config_var_s**)config_var0))->name,
-    (*((config_var_s**)config_var1))->name
-  );
   return strcmp(
     (*((config_var_s**) config_var0))->name,
     (*((config_var_s**) config_var1))->name
