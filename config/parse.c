@@ -359,10 +359,10 @@ static void __match_var_decleration(
     return;
   }
   
-  char** type_specifier = vector_get_t(char*, vector, 0);
-  char** var_name = vector_get_t(char*, vector, 1);
-  char** colon = vector_get_t(char*, vector, 2);
-  char** value_as_string = vector_get_t(char*, vector, 3);
+  char** type_specifier = vector_get_of(char*, vector, 0);
+  char** var_name = vector_get_of(char*, vector, 1);
+  char** colon = vector_get_of(char*, vector, 2);
+  char** value_as_string = vector_get_of(char*, vector, 3);
   
   data_type_t var_type;
   if(!(var_type = __is_type_specifier(*type_specifier))) {
@@ -486,7 +486,7 @@ void __parse_line(
     __match_var_decleration(line, line_len, line_num, parse_res, vector);
 
   for(int32_t i = 0; i < vector->len; i++) {
-    char** ptr = vector_get_t(char*, vector, i);
+    char** ptr = vector_get_of(char*, vector, i);
     free(*ptr);
   }
 

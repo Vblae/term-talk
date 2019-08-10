@@ -25,9 +25,9 @@ int32_t main(int argc, char** argv) {
     printf("og:%p->%s new:%p->%s\n", test[i], test[i], *val, *val);
   }
 
-  printf("back: %s\n", *((char**) vector_back(vector)));
+  printf("back: %s\n", *(vector_back_of(char*, vector)));
   vector_pop(vector);
-  printf("back: %s\n", *((char**) vector_back(vector)));
+  printf("back: %s\n", *(vector_back_of(char*, vector)));
   
   char** str = &test[1];
   int32_t idx = vector_find(vector, str, vector_string_comparator);

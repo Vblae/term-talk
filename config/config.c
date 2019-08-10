@@ -185,7 +185,7 @@ config_s* load_config(char* config_file_path) {
   }
 
   for(int32_t i = 0; i < parse_results->len; i++) {
-    parse_result_s* parse_res = vector_get_t(parse_result_s, parse_results, i);
+    parse_result_s* parse_res = vector_get_of(parse_result_s, parse_results, i);
     config_var_s* conf_var = __create_config_var(
       &config_var_block[i],
       parse_res->var_name,
