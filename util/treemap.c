@@ -25,6 +25,10 @@ typedef struct tree_map_wrapper {
   tree_map_key_deallocator_f __key_deallocator;
 } tree_map_wrapper_s;
 
+int32_t tree_map_int_key_comparator(void* key0, void* key1) {
+  return *((int*) key0) - *((int*) key1);
+}
+
 int32_t tree_map_string_key_comparator(void* key0, void* key1) {
   return strcmp(*((char**) key0), *((char**) key1));
 }
@@ -126,15 +130,23 @@ tree_map_s* tree_map_create_with_allocators(
   return &tree_map->map;
 }
 
-tree_map_s* tree_map_create_of_string_key(
-  size_t val_size
-) {
+tree_map_s* tree_map_create_of_string_key(size_t val_size) {
   return tree_map_create_with_allocators(
     sizeof(char*),
     val_size,
     &tree_map_string_key_comparator,
     &tree_map_string_key_allocator,
     &tree_map_string_key_deallocator
+  );
+}
+
+tree_map_s* tree_map_create_of_int_key(size_t val_size) {
+  return tree_map_create_with_allocators(
+    sizeof(int32_t),
+    val_size,
+    &tree_map_int_key_comparator,
+    0,
+    0
   );
 }
 

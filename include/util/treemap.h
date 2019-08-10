@@ -14,6 +14,8 @@ typedef struct tree_map {
   size_t size;
 } tree_map_s;
 
+int32_t tree_map_int_key_comparator(void* key0, void* key1); 
+
 int32_t tree_map_string_key_comparator(void* key0, void* key1);
 
 int32_t tree_map_string_key_allocator(void* src, void* dst);
@@ -29,6 +31,8 @@ tree_map_s* tree_map_create_with_allocators(
 );
 
 tree_map_s* tree_map_create_of_string_key(size_t val_size);
+
+tree_map_s* tree_map_create_of_int_key(size_t val_size);
 
 tree_map_s* tree_map_create(
   size_t key_size,
