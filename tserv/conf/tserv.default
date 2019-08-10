@@ -1,14 +1,14 @@
-i8 test_byte: -10
-u16 port: 32769
+i8 _7: -10
+u16 _1: 32769
 u16 bad_type: -123
 
-i32 test_int: -78
-i64 test_long: 2000
+i32 _2: -78
+i64 _4: 2000
 
-f32 _string: 78.123
-f64 test_double: 0.3
+f32 _3: 78.123
+f64 _6: 0.3
 
-string ip_address: '127.0.0.1'
+string _5: '127.0.0.1'
 
 string test_string: 'This whole thing is the test string
 

@@ -135,18 +135,39 @@ static void __print_config(config_s* config) {
   }
 }
 
-config_s* create_config() {
-  config_s* conf = (config_s*) malloc(sizeof(config_s));
-  conf->vars = 0;
-  conf->tail = 0;
-  return conf;
-}
-
 int32_t __vector_config_var_comparator(void* config_var0, void* config_var1) {
   return strcmp(
     (*((config_var_s**) config_var0))->name,
     (*((config_var_s**) config_var1))->name
   );
+}
+
+static void __insert_balanced_helper(
+  config_s* conf,
+  vector_s* conf_vars,
+  int32_t lo,
+  int32_t hi
+) {
+  if(lo > hi)
+    return;
+  
+  int32_t mid = (hi - lo) / 2 + lo;
+  config_var_s** conf_var = vector_get_of(config_var_s*, conf_vars, mid);
+  __add_config_var(conf, *conf_var); 
+
+  __insert_balanced_helper(conf, conf_vars, lo, mid - 1);
+  __insert_balanced_helper(conf, conf_vars, mid + 1, hi);
+}
+
+static void __insert_balanced(config_s* conf, vector_s* conf_vars) {
+  __insert_balanced_helper(conf, conf_vars, 0, conf_vars->len - 1);
+}
+
+config_s* create_config() {
+  config_s* conf = (config_s*) malloc(sizeof(config_s));
+  conf->vars = 0;
+  conf->tail = 0;
+  return conf;
 }
 
 void config_free(config_s* conf) {
@@ -213,11 +234,7 @@ config_s* load_config(char* config_file_path) {
   }
 
   vector_sort(conf_vars, __vector_config_var_comparator);
-  for(int32_t i = 0; i < conf_vars->len; i++) {
-    config_var_s** conf_var = vector_get_of(config_var_s*, conf_vars, i);
-    __add_config_var(conf, *conf_var);
-  }
-  
+  __insert_balanced(conf, conf_vars);
   __print_config(conf);
   vector_free(parse_results);
   return conf;
