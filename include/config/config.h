@@ -9,7 +9,6 @@
 #define MAX_VAR_LEN 255
 
 struct config_var {
-  struct config_var* next;
   char name[MAX_VAR_LEN + 1];
 
   data_type_t type;
@@ -25,16 +24,16 @@ struct config_var {
     float float_val;
     double double_val;
     char* string_val;
-    
   };
+
+  struct config_var* left;
+  struct config_var* right;
 };
 
 typedef struct config_var config_var_s;
 
 struct config {
-  size_t size;
-  config_var_s* vars;
-  config_var_s* tail;
+  config_var_s* root;
 };
 
 typedef struct config config_s;

@@ -58,24 +58,45 @@ static config_var_s* __create_config_var(
   }
 
   conf_var->type = type;
+  conf_var->left = 0;
+  conf_var->right = 0;
   return conf_var;
 }
 
-static void __add_config_var_head(config_s* conf, config_var_s* conf_var) {
-  conf->vars = conf_var;
-  conf->tail = conf_var;
+static int32_t __add_config_var_helper(config_var_s* root, config_var_s* conf_var) {
+  int32_t comparison = strcmp(conf_var->name, root->name);
+  if(comparison == 0) {
+    m_log_error(
+      "config: error: redefined variable '%s %s'\n",
+      data_type_to_string(conf_var->type),
+      conf_var->name
+    );
+    return 0;
+  }
+  
+  if(comparison < 0) {
+    if(root->left)
+      return __add_config_var_helper(root->left, conf_var);
+
+    root->left = conf_var;
+  }
+
+  if(comparison > 0) {
+    if(root->right)
+      return __add_config_var_helper(root->right, conf_var);
+
+    root->right = conf_var;
+  }
+
+  return 1;
 }
 
-static void __add_config_var_tail(config_s* conf, config_var_s* conf_var) {
-  conf->tail->next = conf_var;
-  conf->tail = conf_var;
-}
+static int32_t __add_config_var(config_s* conf, config_var_s* conf_var) {
+  if(conf->root)
+    return __add_config_var_helper(conf->root, conf_var);
 
-static void __add_config_var(config_s* conf, config_var_s* conf_var) {
-  if(!conf->vars)
-    __add_config_var_head(conf, conf_var);
-  else
-    __add_config_var_tail(conf, conf_var);
+  conf->root = conf_var;
+  return 1;
 }
 
 static void __print_config_var(config_var_s* conf_var) {
@@ -122,17 +143,16 @@ static void __print_config_var(config_var_s* conf_var) {
     default:
       printf("\n");
   }
+
+  __print_config_var(conf_var->left);
+  __print_config_var(conf_var->right);
 }
 
-static void __print_config(config_s* config) {
-  if(!config)
+static void __print_config(config_s* conf) {
+  if(!conf)
     return;
 
-  config_var_s* it = config->vars;
-  while(it) {
-    __print_config_var(it);
-    it = it->next;
-  }
+  __print_config_var(conf->root);
 }
 
 int32_t __vector_config_var_comparator(void* config_var0, void* config_var1) {
@@ -154,7 +174,7 @@ static void __insert_balanced_helper(
   int32_t mid = (hi - lo) / 2 + lo;
   config_var_s** conf_var = vector_get_of(config_var_s*, conf_vars, mid);
   __add_config_var(conf, *conf_var); 
-
+  
   __insert_balanced_helper(conf, conf_vars, lo, mid - 1);
   __insert_balanced_helper(conf, conf_vars, mid + 1, hi);
 }
@@ -165,13 +185,23 @@ static void __insert_balanced(config_s* conf, vector_s* conf_vars) {
 
 config_s* create_config() {
   config_s* conf = (config_s*) malloc(sizeof(config_s));
-  conf->vars = 0;
-  conf->tail = 0;
+  conf->root = 0;
   return conf;
 }
 
+void __config_var_free(config_var_s* conf_var) {
+  if(!conf_var)
+    return;
+
+  if(conf_var->type == STRING_TYPE)
+    free(conf_var->string_val);
+
+  __config_var_free(conf_var->left);
+  __config_var_free(conf_var->right);
+}
 void config_free(config_s* conf) {
-  free(conf->vars);
+  __config_var_free(conf->root);
+  free(conf->root);
   free(conf);
 }
 
