@@ -164,6 +164,7 @@ config_s* load_config(char* config_file_path) {
     return 0;
 
   if(!conf) {
+    printf("error: failed to allocate memory for config\n");
     vector_free(parse_results);
     return 0;
   }
@@ -177,6 +178,7 @@ config_s* load_config(char* config_file_path) {
      (config_var_s*) malloc(parse_results->len * sizeof(config_var_s));
 
   if(!config_var_block) {
+    printf("error: failed to allocate memory for config var block\n");
     vector_free(parse_results);
     config_free(conf);
     return 0;
