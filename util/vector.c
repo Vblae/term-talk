@@ -276,7 +276,7 @@ int vector_pop(vector_s* vector) {
   return 1;
 }
 
-void* vector_top(vector_s* vector) {
+void* vector_back(vector_s* vector) {
   if(!vector) {
     printf("error: vector: cannot get top from a null vector\n");
     return 0;
