@@ -8,9 +8,12 @@
 #include "util/vector.h"
 #include "util/log.h"
 
-static config_var_s* __create_config_var(char* name, void* data, data_type_t type) {
-  config_var_s* conf_var = (config_var_s*) malloc(sizeof(config_var_s));
-  
+static config_var_s* __create_config_var(
+  config_var_s* conf_var,
+  char* name,
+  void* data,
+  data_type_t type
+) {
   size_t name_len = strlen(name);
   size_t len = name_len < MAX_VAR_LEN ? name_len : MAX_VAR_LEN;
   strncpy(conf_var->name, name, len);
@@ -138,15 +141,8 @@ config_s* create_config() {
   return conf;
 }
 
-void free_config(config_s* conf) {
-  config_var_s* conf_var = conf->vars;
-  while(conf_var) {
-    config_var_s* next = conf_var->next;
-    free(conf_var);
-
-    conf_var = next;
-  }
-
+void config_free(config_s* conf) {
+  free(conf->vars);
   free(conf);
 }
 
@@ -164,9 +160,32 @@ config_s* load_config(char* config_file_path) {
   
   vector_s* parse_results = parse_lines(fd);
   config_s* conf = create_config();
+  if(!parse_results)
+    return 0;
+
+  if(!conf) {
+    vector_free(parse_results);
+    return 0;
+  }
+
+  if(parse_results->len == 0) {
+    vector_free(parse_results);
+    return conf;
+  }
+
+   config_var_s* config_var_block =
+     (config_var_s*) malloc(parse_results->len * sizeof(config_var_s));
+
+  if(!config_var_block) {
+    vector_free(parse_results);
+    config_free(conf);
+    return 0;
+  }
+
   for(int32_t i = 0; i < parse_results->len; i++) {
     parse_result_s* parse_res = vector_get_t(parse_result_s, parse_results, i);
     config_var_s* conf_var = __create_config_var(
+      &config_var_block[i],
       parse_res->var_name,
       parse_res->var_data,
       parse_res->var_type

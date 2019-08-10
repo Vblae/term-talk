@@ -41,7 +41,7 @@ typedef struct config config_s;
 
 config_s* create_config();
 
-void free_config(config_s* conf);
+void config_free(config_s* conf);
 
 config_s* load_config(char* config_file_path);
 
