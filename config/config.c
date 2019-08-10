@@ -8,7 +8,7 @@
 #include "util/vector.h"
 #include "util/log.h"
 
-static config_var_s* __create_config_var(
+static config_var_s* __config_var_create(
   config_var_s* conf_var,
   char* name,
   void* data,
@@ -183,7 +183,7 @@ static void __insert_balanced(config_s* conf, vector_s* conf_vars) {
   __insert_balanced_helper(conf, conf_vars, 0, conf_vars->len - 1);
 }
 
-config_s* create_config() {
+config_s* config_create() {
   config_s* conf = (config_s*) malloc(sizeof(config_s));
   conf->root = 0;
   return conf;
@@ -218,7 +218,7 @@ config_s* load_config(char* config_file_path) {
   }
   
   vector_s* parse_results = parse_lines(fd);
-  config_s* conf = create_config();
+  config_s* conf = config_create();
   if(!parse_results)
     return 0;
 
@@ -253,7 +253,7 @@ config_s* load_config(char* config_file_path) {
 
   for(int32_t i = 0; i < parse_results->len; i++) {
     parse_result_s* parse_res = vector_get_of(parse_result_s, parse_results, i);
-    config_var_s* conf_var = __create_config_var(
+    config_var_s* conf_var = __config_var_create(
       &config_var_block[i],
       parse_res->var_name,
       parse_res->var_data,

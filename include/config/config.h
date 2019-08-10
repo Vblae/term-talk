@@ -38,9 +38,10 @@ struct config {
 
 typedef struct config config_s;
 
-config_s* create_config();
+config_s* config_create();
 
 void config_freg(config_s* conf);
+
 
 config_s* load_config(char* config_file_path);
 
