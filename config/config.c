@@ -63,6 +63,17 @@ static config_var_s* __config_var_create(
   return conf_var;
 }
 
+void __config_var_free(config_var_s* conf_var) {
+  if(!conf_var)
+    return;
+
+  if(conf_var->type == STRING_TYPE)
+    free(conf_var->string_val);
+
+  __config_var_free(conf_var->left);
+  __config_var_free(conf_var->right);
+}
+
 static int32_t __add_config_var_helper(config_var_s* root, config_var_s* conf_var) {
   int32_t comparison = strcmp(conf_var->name, root->name);
   if(comparison == 0) {
@@ -183,26 +194,44 @@ static void __insert_balanced(config_s* conf, vector_s* conf_vars) {
   __insert_balanced_helper(conf, conf_vars, 0, conf_vars->len - 1);
 }
 
+static config_var_s* __config_get_helper(config_var_s* root, char* name) {
+  if(!root)
+    return 0;
+
+  int32_t comparison = strcmp(name, root->name);
+  if(comparison == 0)
+    return root;
+
+  if(comparison < 0)
+    return __config_get_helper(root->left, name);
+
+  return __config_get_helper(root->right, name);
+}
+
 config_s* config_create() {
   config_s* conf = (config_s*) malloc(sizeof(config_s));
   conf->root = 0;
   return conf;
 }
 
-void __config_var_free(config_var_s* conf_var) {
-  if(!conf_var)
-    return;
-
-  if(conf_var->type == STRING_TYPE)
-    free(conf_var->string_val);
-
-  __config_var_free(conf_var->left);
-  __config_var_free(conf_var->right);
-}
 void config_free(config_s* conf) {
   __config_var_free(conf->root);
   free(conf->root);
   free(conf);
+}
+
+config_var_s* config_get(config_s* conf, char* name) {
+  if(!conf) {
+    m_log_error("config: error: null config passed to config_get()\n");
+    return 0;
+  }
+
+  if(!name) {
+    m_log_warning("config: warn: null name passed to config_get()\n");
+    return 0;
+  }
+
+  return __config_get_helper(conf->root, name);
 }
 
 config_s* load_config(char* config_file_path) {

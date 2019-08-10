@@ -9,6 +9,12 @@ int32_t main(int argc, char** argv) {
   config_s* conf = load_config(argv[1]);
   printf("p: %p\n", conf);
 
+  config_var_s* _5 = config_get(conf, "_5");
+  printf("get '_5': %p %s\n", _5, _5->name);
+
+  config_var_s* none = config_get(conf, "none");
+  printf("get 'none': %p\n", none);
+
   printf("\nvector test start ------------------\n");
   vector_s* vector = vector_of_string_create(0);
   char* test[] = {
@@ -36,3 +42,4 @@ int32_t main(int argc, char** argv) {
   printf("vector test end ------------------\n");
   return 0;
 }
+

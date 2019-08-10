@@ -42,6 +42,7 @@ config_s* config_create();
 
 void config_freg(config_s* conf);
 
+config_var_s* config_get(config_s* conf, char* name);
 
 config_s* load_config(char* config_file_path);
 
