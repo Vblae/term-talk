@@ -4,6 +4,7 @@
 #include "config/config.h"
 #include "util/vector.h"
 #include "util/treemap.h"
+#include "util/treeset.h"
 
 static void __test(char* config_file_path) {
   config_s* conf = load_config(config_file_path);
@@ -82,6 +83,7 @@ static void __test_tree_map() {
     else
       printf("%f\n", *result);
   }
+  printf("tree map size %lu\n", map->size);
   tree_map_free(map);
 }
 
@@ -121,10 +123,66 @@ static void __test_tree_map_string_keys() {
   tree_map_free(map);
 }
 
+static void __test_tree_set() {
+  printf("calling tree_set_create() of int32_t\n");
+  tree_set_s* set = tree_set_create_of(int32_t, &int_comparator);
+  printf("returned from tree_set_create() with %p\n", set);
+  
+  int32_t keys[] = {12, 567, 43, 114, 8, 6, 3, 4};
+
+  printf("calling tree_set_insert() with:\n");
+  for(int32_t i = 0; i < 7; i++) {
+    int32_t status = tree_set_insert(set, &keys[i]);
+    printf("  k: %i %s\n", keys[i], status ? "OK" : "ERR");
+  }
+  printf("finish inserting\n");
+  printf("calling tree_set_contains() with:\n");
+  for(int32_t i = 0; i < 8; i++) {
+    int32_t result = tree_set_contains(set, &keys[i]);
+    printf("query key: %d found: %s\n", keys[i], result ? "YES" : "NO");
+  }
+
+  printf("tree set size %lu\n", set->size);
+  tree_set_free(set);
+}
+
+static void __test_tree_set_string_keys() {
+  printf("calling tree_set_create_of_string_key() of char*\n");
+  tree_set_s* set = tree_set_create_of_string_key();
+  printf("returned from tree_set_create() with %p\n", set);
+  
+  char* keys[] = {
+    "this key",
+    "that key",
+    "they key",
+    "not inserted key"
+  };
+  printf("WHAT WHAT %p %p\n", &keys[0], keys[0]);
+  printf("WHAT WHAT %p %p\n", &keys[1], keys[1]);
+
+  printf("calling tree_set_insert() with:\n");
+  for(int32_t i = 0; i < 3; i++) {
+    printf("  k: %s ", keys[i]);
+    int32_t status = tree_set_insert(set, &keys[i]);
+    printf("%s\n", status ? "OK" : "ERR");
+  }
+
+  printf("finish inserting\n");
+  tree_set_print(set, int_key_printer, float_val_printer);
+
+  printf("calling tree_set_contains() with:\n");
+  for(int32_t i = 0; i < 4; i++) {
+    int32_t result = tree_set_contains(set, &keys[i]);
+    printf("query key: %s found: %s\n", keys[i], result ? "YES" : "NO");
+  }
+  tree_set_free(set);
+}
 int32_t main(int argc, char** argv) {
   __test(argv[1]);
   __test_tree_map();
   __test_tree_map_string_keys();
+  __test_tree_set();
+  __test_tree_set_string_keys();
   return 0;
 }
 

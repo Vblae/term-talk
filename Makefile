@@ -27,12 +27,11 @@ UTILDIR = util
 UTILSRC = $(wildcard $(UTILDIR)/*.c)
 UTILOBJ = $(patsubst %.c, $(OBJDIR)/%.o, $(UTILSRC))
 
-$(OBJDIR)/$(TSERVDIR)/%.o: $(TSERVDIR)/%.c $(OBJDIR) $(OBJDIR)/$(TSERVDIR) 
+$(OBJDIR)/$(TSERVDIR)/%.o: $(TSERVDIR)/%.c $(OBJDIR) $(OBJDIR)/$(TSERVDIR)
 	$(CC) $(CFLAGS) -I $(INCDIR) -c -o $@ $<
 
-$(OBJDIR)/$(CONFDIR)/%.o: $(CONFDIR)/%.c $(OBJDIR) $(OBJDIR)/$(CONFDIR) 
+$(OBJDIR)/$(CONFDIR)/%.o: $(CONFDIR)/%.c $(OBJDIR) $(OBJDIR)/$(CONFDIR)
 	$(CC) $(CFLAGS) -I $(INCDIR) -c -o $@ $<
-
 $(OBJDIR)/$(UTILDIR)/%.o: $(UTILDIR)/%.c $(OBJDIR) $(OBJDIR)/$(UTILDIR) 
 	$(CC) $(CFLAGS) -I $(INCDIR) -c -o $@ $<
 
@@ -50,11 +49,11 @@ $(OBJDIR)/$(TSERVDIR):
 	mkdir $@
 
 $(OBJDIR)/$(CONFDIR):
-	mkdir $@ 
+	mkdir $@
 
 $(OBJDIR)/$(UTILDIR):
 	mkdir $@
-
+ 
 $(BINDIR):
 	mkdir $(BINDIR)
 

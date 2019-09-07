@@ -75,11 +75,19 @@ static tree_map_node_s* __tree_map_node_create(
     free(node);
     return 0;
   }
-
+  
+  int32_t key_allocation_succeeded;
   if(map->__key_allocator) {
-    map->__key_allocator(key, key_space);
+    key_allocation_succeeded = map->__key_allocator(key, key_space);
   } else {
     memcpy(key_space, key, map->__key_size);
+    key_allocation_succeeded = 1;
+  }
+
+  if(!key_allocation_succeeded) {
+    free(key_space);
+    free(node);
+    return 0;
   }
 
   memcpy(val_space, val, map->__val_size);
@@ -155,13 +163,7 @@ tree_map_s* tree_map_create(
   size_t val_size,
   tree_map_key_comparator_f key_comp
 ) {
-  return tree_map_create_with_allocators(
-    key_size,
-    val_size,
-    key_comp,
-    0,
-    0
-  );
+  return tree_map_create_with_allocators(key_size, val_size, key_comp, 0, 0);
 }
 
 static void __tree_map_node_free(tree_map_wrapper_s* map, tree_map_node_s* root) {
@@ -179,13 +181,16 @@ static void __tree_map_node_free(tree_map_wrapper_s* map, tree_map_node_s* root)
   free(root);
 }
 
-void tree_map_free(tree_map_s* map) {
+static void __tree_map_free(tree_map_wrapper_s* map) {
   if(!map)
     return;
-  
-  tree_map_wrapper_s* map_wrapper = (tree_map_wrapper_s*) map;
-  __tree_map_node_free(map_wrapper, map_wrapper->__root);
-  free(map_wrapper);
+
+  __tree_map_node_free(map, map->__root);
+  free(map);
+}
+
+void tree_map_free(tree_map_s* map) {
+  __tree_map_free((tree_map_wrapper_s*) map);
 }
 
 static int32_t __tree_map_insert_helper(
@@ -198,7 +203,7 @@ static int32_t __tree_map_insert_helper(
   if(comparison == 0) {
     memcpy(root->val, val, map->__val_size);
     return 1;
-  }else if(comparison < 0) {
+  } else if(comparison < 0) {
     if(root->left)
       return __tree_map_insert_helper(map, root->left, key, val);
 
@@ -224,24 +229,25 @@ static int32_t __tree_map_insert(tree_map_wrapper_s* map, void* key, void* val) 
     return __tree_map_insert_helper(map, map->__root, key, val);
 
   map->__root = __tree_map_node_create(map, key, val);
-  if(map->__root)
-    return 1;
-
-  return 0;
+  return map->__root != 0;
 }
 
 int32_t tree_map_insert(tree_map_s* map, void* key, void* val) {
   if(!map) {
-    m_log_error("treemap: error: can not insert into null map\n");
+    m_log_error("treemap: error: cannot insert into null map\n");
     return 0;
   }
 
   if(!key) {
-    m_log_error("treemap: error: insert key can not be null\n");
+    m_log_error("treemap: error:cannot insert null key into map\n");
     return 0;
   }
 
-  return __tree_map_insert((tree_map_wrapper_s*) map, key, val);
+  int32_t inserted = __tree_map_insert((tree_map_wrapper_s*) map, key, val);
+  if(inserted)
+    map->size++;
+
+  return inserted;
 }
 
 static void* __tree_map_get_helper(
