@@ -14,6 +14,7 @@ TSERVOBJ = $(patsubst %.c, $(OBJDIR)/%.o, $(TSERVSRC))
 # future use
 # TCLIDIR =
 # TCLISRC =
+# TCLIHDR =
 # TCLIOBJ =
 
 TDB = tdb
@@ -44,15 +45,15 @@ $(OBJDIR)/$(CONFDIR)/%.o: $(CONFDIR)/%.c $(OBJDIR) $(OBJDIR)/$(CONFDIR) $(CONFHD
 $(OBJDIR)/$(UTILDIR)/%.o: $(UTILDIR)/%.c $(OBJDIR) $(OBJDIR)/$(UTILDIR) $(UTILHDR)
 	$(CC) $(CFLAGS) -I $(INCDIR) -c -o $@ $<
 
-tserv: $(BINDIR) $(TSERVOBJ) $(CONFOBJ) $(UTILOBJ)
+tserv: $(BINDIR) $(TSERVOBJ) config util
 	$(CC) $(CFLAGS) -I $(INCDIR) -o $(BINDIR)/$(TSERV) $(TSERVOBJ) $(CONFOBJ) $(UTILOBJ)
 
-tdb: $(BINDIR) $(TDBOJB) $(CONFOBJ) $(UTILOBJ)
+tdb: $(BINDIR) $(TDBOBJ) config util
 	$(CC) $(CFLAGS) -I $(INCDIR) -o $(BINDIR)/$(TDB) $(TDBOBJ) $(CONFOBJ) $(UTILOBJ)
 
 config: $(CONFOBJ) $(UTILOBJ)
 
-util: $(UTILOBJ) $(OBJDIR)/$(UTILDIR)
+util: $(UTILOBJ)
 
 $(OBJDIR):
 	mkdir $@
