@@ -215,7 +215,7 @@ static int32_t __tokenize_line(
 
   if(!vector) {
     LOGE(
-      "error: parser: ivalid argument given to __tokenize_line vector cannot be null\n"
+      "parser: error: ivalid argument given to __tokenize_line vector cannot be null\n"
     );
     return 0;
   }
@@ -310,7 +310,7 @@ static int32_t __tokenize_line(
           next_state = PUSH_STATE;
         else if(it == end - 1) {
           LOGE(
-            "error: parser: unclosed string literal [%s] in line %lu\n",
+            "parser: error: unclosed string literal [%s] in line %lu\n",
             token_start,
             line_num
           );
@@ -330,7 +330,7 @@ static int32_t __tokenize_line(
       case INVALID_STATE:
       default:
         LOGE(
-          "error: parser: invalid character '%c' in line %lu\n=>%s\n",
+          "parser: error: invalid character '%c' in line %lu\n=>%s\n",
           *it,
           line_num,
           line
@@ -380,7 +380,7 @@ static void __match_var_decleration(
   data_type_e var_type;
   if(!(var_type = __is_type_specifier(*type_specifier))) {
     LOGE(
-      "error: parser: invalid type '%s' in line %lu\n==>%s\n",
+      "parser: error: invalid type '%s' in line %lu\n==>%s\n",
       *type_specifier,
       line_num,
       line
@@ -392,7 +392,7 @@ static void __match_var_decleration(
 
   if(!__is_name(*var_name)) {
     LOGE(
-      "error: parser: invalid variable name '%s' in line %lu\n==> %s\n",
+      "parser: error: invalid variable name '%s' in line %lu\n==> %s\n",
       *var_name,
       line_num,
       line
@@ -404,7 +404,7 @@ static void __match_var_decleration(
 
   if(!__is_colon(**colon)) {
     LOGE(
-      "error: parser: expected symbol ':' but got '%s' instead in line %lu\n==> %s\n",
+      "parser: error: expected symbol ':' but got '%s' instead in line %lu\n==> %s\n",
       *colon,
       line_num,
       line
@@ -416,7 +416,7 @@ static void __match_var_decleration(
 
   if(vector->len > 4) {
     LOGE(
-      "error: parser: unexpected token '%s' in line %lu\n==> %s\n",
+      "parser: error: unexpected token '%s' in line %lu\n==> %s\n",
       *((char**) vector_get(vector, 4)),
       line_num,
       line
@@ -464,7 +464,7 @@ static void __match_var_decleration(
   
   if(type_error) {
     LOGE(
-      "error: parser: expected value of type '%s' but got '%s' of type '%s'"
+      "parser: error: expected value of type '%s' but got '%s' of type '%s'"
         " in line %lu\n==> %s\n",
       *type_specifier,
       *value_as_string,
@@ -615,7 +615,7 @@ vector_s* parse_lines(int32_t fd) {
       }
       
       if(!saw_nl && check_read == 1 && check != '\n') {
-        LOGE("error: parser: line %d: line is too long\n", line_num);
+        LOGE("parser: error: line %d: line is too long\n", line_num);
         vector_free(parse_results);
         vector_free(vector_for_parse);
         return 0;
