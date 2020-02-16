@@ -51,14 +51,14 @@ static tree_set_node_s* __tree_set_node_create(tree_set_wrapper_s* set, void* ke
   tree_set_node_s* node = (tree_set_node_s*) malloc(sizeof(tree_set_node_s));
   if(!node) {
     LOGE("treeset: error: failed to allocate memory for tree set node\n");
-    return 0;
+    return NULL;
   }
 
   void* key_space = malloc(set->__key_size);
   if(!key_space) {
     LOGE("treeset: error: failed to allocate memory for tree set node key\n");
     free(node);
-    return 0;
+    return NULL;
   }
   
   int32_t key_allocation_succeeded;
@@ -72,7 +72,7 @@ static tree_set_node_s* __tree_set_node_create(tree_set_wrapper_s* set, void* ke
   if(!key_allocation_succeeded) {
     free(key_space);
     free(node);
-    return 0;
+    return NULL;
   }
   
   node->key = key_space;
@@ -89,12 +89,12 @@ tree_set_s* tree_set_create_with_allocators(
 ) {
   if(!key_size) {
     LOGE("treeset: error: key size cannot be zero\n");
-    return 0;
+    return NULL;
   }
 
   if(!key_comp) {
     LOGE("treeset: error: key comparator cannot be null\n");
-    return 0;
+    return NULL;
   }
 
   tree_set_wrapper_s* tree_set =
@@ -102,7 +102,7 @@ tree_set_s* tree_set_create_with_allocators(
 
   if(!tree_set) {
     LOGE("treeset: error: failed to allocate memory for tree set\n");
-    return 0;
+    return NULL;
   }
 
   tree_set->set.size = 0;
@@ -127,13 +127,13 @@ tree_set_s* tree_set_create_of_int_key() {
   return tree_set_create_with_allocators(
     sizeof(int32_t),
     &tree_set_int_key_comparator,
-    0,
-    0
+    NULL,
+    NULL
   );
 }
 
 tree_set_s* tree_set_create(size_t key_size, tree_set_key_comparator_f key_comp) {
-  return tree_set_create_with_allocators(key_size, key_comp, 0, 0);
+  return tree_set_create_with_allocators(key_size, key_comp, NULL, NULL);
 }
 
 static void __tree_set_node_free(tree_set_wrapper_s* set, tree_set_node_s* root) {

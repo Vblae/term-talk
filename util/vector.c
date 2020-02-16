@@ -92,7 +92,7 @@ vector_s* vector_create_with_allocators(
 ) {
   if(!item_size) {
     printf("error: vector: item_size cannot be zero\n");
-    return 0;
+    return NULL;
   }
 
   if(!allocator_funct)
@@ -106,14 +106,14 @@ vector_s* vector_create_with_allocators(
   vector_wrapper_s* vector = (vector_wrapper_s*) malloc(sizeof(vector_wrapper_s));
   if(!vector) {
     printf("error: vector: failed to malloc vector memory\n");
-    return 0;
+    return NULL;
   }
 
   vector->__data_block = malloc(actual_reserve * item_size);
   if(!vector->__data_block) {
     free(vector);
     printf("error: vector: failed to malloc vector data block\n");
-    return 0;
+    return NULL;
   }
 
   vector->vec.len = 0;
@@ -279,11 +279,11 @@ int32_t vector_pop(vector_s* vector) {
 void* vector_back(vector_s* vector) {
   if(!vector) {
     printf("error: vector: cannot get top from a null vector\n");
-    return 0;
+    return NULL;
   }
 
   if(vector->len == 0)
-    return 0;
+    return NULL;
 
   vector_wrapper_s* vector_wrapper = (vector_wrapper_s*) vector;
   return &vector_wrapper->__data_block[(vector->len - 1) * vector_wrapper->__item_size];
@@ -291,10 +291,10 @@ void* vector_back(vector_s* vector) {
 
 void* vector_get(vector_s* vector, int32_t idx) {
   if(!vector)
-    return 0;
+    return NULL;
 
   if(idx < 0 || idx > vector->len)
-    return 0;
+    return NULL;
 
   vector_wrapper_s* vector_wrapper = (vector_wrapper_s*) vector;
   return &vector_wrapper->__data_block[idx * vector_wrapper->__item_size];

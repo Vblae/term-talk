@@ -66,14 +66,14 @@ static tree_map_node_s* __tree_map_node_create(
   if(!key_space) {
     LOGE("treemap: error: failed to allocate mem for key space\n");
     free(node);
-    return 0;
+    return NULL;
   }
 
   if(!key_space) {
     LOGE("treemap: error: failed to allocate mem for val space\n");
     free(key_space);
     free(node);
-    return 0;
+    return NULL;
   }
   
   int32_t key_allocation_succeeded;
@@ -87,7 +87,7 @@ static tree_map_node_s* __tree_map_node_create(
   if(!key_allocation_succeeded) {
     free(key_space);
     free(node);
-    return 0;
+    return NULL;
   }
 
   memcpy(val_space, val, map->__val_size);
@@ -107,17 +107,17 @@ tree_map_s* tree_map_create_with_allocators(
 ) {
   if(!key_size) {
     LOGE("treemap: error: key_size can not be zero\n");
-    return 0;
+    return NULL;
   }
   
   if(!val_size) {
     LOGE("treemap: error: val_size can not be zero\n");
-    return 0;
+    return NULL;
   }
 
   if(!key_comp) {
     LOGE("treemap: error: key comparator function can not be null\n");
-    return 0;
+    return NULL;
   }
 
   tree_map_wrapper_s* tree_map =
@@ -125,7 +125,7 @@ tree_map_s* tree_map_create_with_allocators(
   
   if(!tree_map) {
     LOGE("treemap: error: failed to allocate mem for tree_map\n");
-    return 0;
+    return NULL;
   }
 
   tree_map->__key_size = key_size;
@@ -153,8 +153,8 @@ tree_map_s* tree_map_create_of_int_key(size_t val_size) {
     sizeof(int32_t),
     val_size,
     &tree_map_int_key_comparator,
-    0,
-    0
+    NULL,
+    NULL
   );
 }
 
