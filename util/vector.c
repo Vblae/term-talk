@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "util/log.h"
 #include "util/vector.h"
 
 struct vector_wrapper {
