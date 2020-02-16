@@ -214,7 +214,7 @@ static int32_t __tokenize_line(
     return 0;
 
   if(!vector) {
-    m_log_error(
+    LOGE(
       "error: parser: ivalid argument given to __tokenize_line vector cannot be null\n"
     );
     return 0;
@@ -309,7 +309,7 @@ static int32_t __tokenize_line(
         if(__is_single_quote(*it))
           next_state = PUSH_STATE;
         else if(it == end - 1) {
-          m_log_error(
+          LOGE(
             "error: parser: unclosed string literal [%s] in line %lu\n",
             token_start,
             line_num
@@ -329,7 +329,7 @@ static int32_t __tokenize_line(
         break;
       case INVALID_STATE:
       default:
-        m_log_error(
+        LOGE(
           "error: parser: invalid character '%c' in line %lu\n=>%s\n",
           *it,
           line_num,
@@ -379,7 +379,7 @@ static void __match_var_decleration(
   
   data_type_e var_type;
   if(!(var_type = __is_type_specifier(*type_specifier))) {
-    m_log_error(
+    LOGE(
       "error: parser: invalid type '%s' in line %lu\n==>%s\n",
       *type_specifier,
       line_num,
@@ -391,7 +391,7 @@ static void __match_var_decleration(
   }
 
   if(!__is_name(*var_name)) {
-    m_log_error(
+    LOGE(
       "error: parser: invalid variable name '%s' in line %lu\n==> %s\n",
       *var_name,
       line_num,
@@ -403,7 +403,7 @@ static void __match_var_decleration(
   }
 
   if(!__is_colon(**colon)) {
-    m_log_error(
+    LOGE(
       "error: parser: expected symbol ':' but got '%s' instead in line %lu\n==> %s\n",
       *colon,
       line_num,
@@ -415,7 +415,7 @@ static void __match_var_decleration(
   }
 
   if(vector->len > 4) {
-    m_log_error(
+    LOGE(
       "error: parser: unexpected token '%s' in line %lu\n==> %s\n",
       *((char**) vector_get(vector, 4)),
       line_num,
@@ -457,13 +457,13 @@ static void __match_var_decleration(
     case TYPE_NONE:
       // getting here should not happen, if it does then
       // you should fix it
-      m_log_error("parser: error: invalid type 'NONE' received\n");
+      LOGE("parser: error: invalid type 'NONE' received\n");
       __make_none_var(parse_res);
       return;
   }
   
   if(type_error) {
-    m_log_error(
+    LOGE(
       "error: parser: expected value of type '%s' but got '%s' of type '%s'"
         " in line %lu\n==> %s\n",
       *type_specifier,
@@ -615,7 +615,7 @@ vector_s* parse_lines(int32_t fd) {
       }
       
       if(!saw_nl && check_read == 1 && check != '\n') {
-        m_log_error("error: parser: line %d: line is too long\n", line_num);
+        LOGE("error: parser: line %d: line is too long\n", line_num);
         vector_free(parse_results);
         vector_free(vector_for_parse);
         return 0;

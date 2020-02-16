@@ -53,8 +53,6 @@ static config_var_s* __config_var_create(
     case TYPE_STRING:
       conf_var->string_val = strdup(data);
       break;
-    case TYPE_NONE:
-      // do nothing
     default:
       break;
   }
@@ -79,7 +77,7 @@ void __config_var_free(config_var_s* conf_var) {
 static int32_t __add_config_var_helper(config_var_s* root, config_var_s* conf_var) {
   int32_t comparison = strcmp(conf_var->name, root->name);
   if(comparison == 0) {
-    m_log_error(
+    LOGE(
       "config: error: redefined variable '%s %s'\n",
       data_type_to_string(conf_var->type),
       conf_var->name
@@ -224,12 +222,12 @@ void config_free(config_s* conf) {
 
 config_var_s* config_get(config_s* conf, char* name) {
   if(!conf) {
-    m_log_error("config: error: null config passed to config_get()\n");
+    LOGE("config: error: null config passed to config_get()\n");
     return 0;
   }
 
   if(!name) {
-    m_log_warning("config: warn: null name passed to config_get()\n");
+    LOGW("config: warn: null name passed to config_get()\n");
     return 0;
   }
 
@@ -238,19 +236,19 @@ config_var_s* config_get(config_s* conf, char* name) {
 
 config_s* load_config(char* config_file_path) {
   if(!config_file_path) {
-    m_log_error("config: error: invalid config file path '%s'\n", config_file_path);
+    LOGE("config: error: invalid config file path '%s'\n", config_file_path);
     return 0;
   }
 
   int32_t fd = open(config_file_path, O_RDONLY);
   if(fd == -1) {
-    m_log_error("config: error: could not open file '%s'\n", config_file_path);
+    LOGE("config: error: could not open file '%s'\n", config_file_path);
     return 0;
   }
   
   config_s* conf = config_create();
   if(!conf) {
-    printf("config: error: failed to allocate memory for config\n");
+    LOGE("config: error: failed to allocate memory for config\n");
     close(fd);
     return 0;
   }
@@ -267,7 +265,7 @@ config_s* load_config(char* config_file_path) {
      (config_var_s*) malloc(parse_results->len * sizeof(config_var_s));
 
   if(!config_var_block) {
-    printf("config: error: failed to allocate memory for config var block\n");
+    LOGE("config: error: failed to allocate memory for config var block\n");
     vector_free(parse_results);
     config_free(conf);
     return 0;
@@ -275,7 +273,7 @@ config_s* load_config(char* config_file_path) {
 
   vector_s* conf_vars = vector_create(parse_results->len, sizeof(config_var_s*));
   if(!conf_vars) {
-    printf("config: error: failes to allocate memory for config var vector\n");
+    LOGE("config: error: failes to allocate memory for config var vector\n");
     vector_free(parse_results);
     config_free(conf);
     return 0;

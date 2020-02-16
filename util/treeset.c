@@ -33,7 +33,7 @@ int32_t tree_set_string_key_comparator(void* key0, void* key1) {
 int32_t tree_set_string_key_allocator(void* src, void* dst) {
   char* key_copy = strdup(*((char**) src));
   if(!key_copy) {
-    m_log_error(
+    LOGE(
       "treeset: error: failed to allocate mem tree_set_string_key_allocator()\n"
     );
     return 0;
@@ -50,13 +50,13 @@ void tree_set_string_key_deallocator(void* ptr) {
 static tree_set_node_s* __tree_set_node_create(tree_set_wrapper_s* set, void* key) {
   tree_set_node_s* node = (tree_set_node_s*) malloc(sizeof(tree_set_node_s));
   if(!node) {
-    m_log_error("treeset: error: failed to allocate memory for tree set node\n");
+    LOGE("treeset: error: failed to allocate memory for tree set node\n");
     return 0;
   }
 
   void* key_space = malloc(set->__key_size);
   if(!key_space) {
-    m_log_error("treeset: error: failed to allocate memory for tree set node key\n");
+    LOGE("treeset: error: failed to allocate memory for tree set node key\n");
     free(node);
     return 0;
   }
@@ -88,12 +88,12 @@ tree_set_s* tree_set_create_with_allocators(
   tree_set_key_deallocator_f key_deallocator
 ) {
   if(!key_size) {
-    m_log_error("treeset: error: key size cannot be zero\n");
+    LOGE("treeset: error: key size cannot be zero\n");
     return 0;
   }
 
   if(!key_comp) {
-    m_log_error("treeset: error: key comparator cannot be null\n");
+    LOGE("treeset: error: key comparator cannot be null\n");
     return 0;
   }
 
@@ -101,7 +101,7 @@ tree_set_s* tree_set_create_with_allocators(
     (tree_set_wrapper_s*) malloc(sizeof(tree_set_wrapper_s));
 
   if(!tree_set) {
-    m_log_error("treeset: error: failed to allocate memory for tree set\n");
+    LOGE("treeset: error: failed to allocate memory for tree set\n");
     return 0;
   }
 
@@ -201,12 +201,12 @@ static int32_t __tree_set_insert(tree_set_wrapper_s* set, void* key) {
 
 int32_t tree_set_insert(tree_set_s* set, void* key) {
   if(!set) {
-    m_log_error("treeset: error: cannot insert into a null tree set\n");
+    LOGE("treeset: error: cannot insert into a null tree set\n");
     return 0;
   }
 
   if(!key) {
-    m_log_error("treeset: error: cannot insert null key into tree set\n");
+    LOGE("treeset: error: cannot insert null key into tree set\n");
     return 0;
   }
 
@@ -247,12 +247,12 @@ static int32_t __tree_set_contains(tree_set_wrapper_s* set, void* key) {
 
 int32_t tree_set_contains(tree_set_s* set, void* key) {
   if(!set) {
-    m_log_error("treeset: error: cannot search in a null tree set\n");
+    LOGE("treeset: error: cannot search in a null tree set\n");
     return 0;
   }
 
   if(!key) {
-    m_log_error("treeset: error: cannot search for a null key in tree set\n");
+    LOGE("treeset: error: cannot search for a null key in tree set\n");
     return 0;
   }
 
