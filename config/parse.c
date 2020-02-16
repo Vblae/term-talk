@@ -13,6 +13,19 @@
 
 #define BUFF_LEN 1024
 
+#define TYPE_SPECIFIER_NONE "None"
+#define TYPE_SPECIFIER_INT8 "i8"
+#define TYPE_SPECIFIER_INT16 "i16"
+#define TYPE_SPECIFIER_INT32 "i32"
+#define TYPE_SPECIFIER_INT64 "i64"
+#define TYPE_SPECIFIER_UINT8 "u8"
+#define TYPE_SPECIFIER_UINT16 "u16"
+#define TYPE_SPECIFIER_UINT32 "u32"
+#define TYPE_SPECIFIER_UINT64 "u64"
+#define TYPE_SPECIFIER_FLOAT "f32"
+#define TYPE_SPECIFIER_DOUBLE "f64"
+#define TYPE_SPECIFIER_STRING "string"
+
 static inline int32_t __is_alpha(char c) {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
