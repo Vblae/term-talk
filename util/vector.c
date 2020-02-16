@@ -91,7 +91,7 @@ vector_s* vector_create_with_allocators(
     vector_item_deallocator_f deallocator_funct
 ) {
   if(!item_size) {
-    printf("error: vector: item_size cannot be zero\n");
+    printf("vector: error: item_size cannot be zero\n");
     return NULL;
   }
 
@@ -105,14 +105,14 @@ vector_s* vector_create_with_allocators(
 
   vector_wrapper_s* vector = (vector_wrapper_s*) malloc(sizeof(vector_wrapper_s));
   if(!vector) {
-    printf("error: vector: failed to malloc vector memory\n");
+    printf("vector: error: failed to malloc vector memory\n");
     return NULL;
   }
 
   vector->__data_block = malloc(actual_reserve * item_size);
   if(!vector->__data_block) {
     free(vector);
-    printf("error: vector: failed to malloc vector data block\n");
+    printf("vector: error: failed to malloc vector data block\n");
     return NULL;
   }
 
@@ -225,12 +225,12 @@ void vector_free(vector_s* vector) {
 
 int32_t vector_push(vector_s* vector, void* item) {
   if(!vector) {
-    printf("error: vector: cannot push to null vector\n");
+    printf("vector: error: cannot push to null vector\n");
     return 0;
   }
 
   if(!item) {
-    printf("error: vector: cannot push null item\n");
+    printf("vector: error: cannot push null item\n");
     return 0;
   }
 
@@ -238,7 +238,7 @@ int32_t vector_push(vector_s* vector, void* item) {
       vector->len == vector->cap &&
       !__vector_double_capacity((vector_wrapper_s*) vector)
   ) {
-    printf("error: vector: failed to increase vector capacity\n");
+    printf("vector: error: failed to increase vector capacity\n");
     return 0;
   }
 
@@ -258,7 +258,7 @@ int32_t vector_push(vector_s* vector, void* item) {
 
 int32_t vector_pop(vector_s* vector) {
   if(!vector) {
-    printf("error: vector: cannot pop from a null vector\n");
+    printf("vector: error: cannot pop from a null vector\n");
     return 0;
   }
 
@@ -278,7 +278,7 @@ int32_t vector_pop(vector_s* vector) {
 
 void* vector_back(vector_s* vector) {
   if(!vector) {
-    printf("error: vector: cannot get top from a null vector\n");
+    printf("vector: error: cannot get top from a null vector\n");
     return NULL;
   }
 
