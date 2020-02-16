@@ -5,31 +5,31 @@
 
 #include "util/vector.h"
 
-#define NONE_TYPE 0x00
-#define INT8_TYPE 0x10
-#define INT16_TYPE 0x20
-#define INT32_TYPE 0x30
-#define INT64_TYPE 0x40
-#define UINT8_TYPE 0x50
-#define UINT16_TYPE 0x60
-#define UINT32_TYPE 0x70
-#define UINT64_TYPE 0x80
-#define FLOAT_TYPE 0x90
-#define DOUBLE_TYPE 0xA0
-#define STRING_TYPE 0xB0
+#define TYPE_NONE 0x00
+#define TYPE_INT8 0x10
+#define TYPE_INT16 0x20
+#define TYPE_INT32 0x30
+#define TYPE_INT64 0x40
+#define TYPE_UINT8 0x50
+#define TYPE_UINT16 0x60
+#define TYPE_UINT32 0x70
+#define TYPE_UINT64 0x80
+#define TYPE_FLOAT 0x90
+#define TYPE_DOUBLE 0xA0
+#define TYPE_STRING 0xB0
 
-#define NONE_TYPE_SPECIFIER "None"
-#define INT8_TYPE_SPECIFIER "i8"
-#define INT16_TYPE_SPECIFIER "i16"
-#define INT32_TYPE_SPECIFIER "i32"
-#define INT64_TYPE_SPECIFIER "i64"
-#define UINT8_TYPE_SPECIFIER "u8"
-#define UINT16_TYPE_SPECIFIER "u16"
-#define UINT32_TYPE_SPECIFIER "u32"
-#define UINT64_TYPE_SPECIFIER "u64"
-#define FLOAT_TYPE_SPECIFIER "f32"
-#define DOUBLE_TYPE_SPECIFIER "f64"
-#define STRING_TYPE_SPECIFIER "string"
+#define TYPE_SPECIFIER_NONE "None"
+#define TYPE_SPECIFIER_INT8 "i8"
+#define TYPE_SPECIFIER_INT16 "i16"
+#define TYPE_SPECIFIER_INT32 "i32"
+#define TYPE_SPECIFIER_INT64 "i64"
+#define TYPE_SPECIFIER_UINT8 "u8"
+#define TYPE_SPECIFIER_UINT16 "u16"
+#define TYPE_SPECIFIER_UINT32 "u32"
+#define TYPE_SPECIFIER_UINT64 "u64"
+#define TYPE_SPECIFIER_FLOAT "f32"
+#define TYPE_SPECIFIER_DOUBLE "f64"
+#define TYPE_SPECIFIER_STRING "string"
 
 typedef int32_t data_type_t;
 

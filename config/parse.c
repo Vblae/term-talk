@@ -46,40 +46,40 @@ static inline int32_t __is_white_space(char c) {
 }
 
 static data_type_t __is_type_specifier(char* type) {
-  if(strcmp(type, INT8_TYPE_SPECIFIER) == 0)
-    return INT8_TYPE;
+  if(strcmp(type, TYPE_SPECIFIER_INT8) == 0)
+    return TYPE_INT8;
 
-  if(strcmp(type, INT16_TYPE_SPECIFIER) == 0)
-    return INT16_TYPE;
+  if(strcmp(type, TYPE_SPECIFIER_INT16) == 0)
+    return TYPE_INT16;
 
-  if(strcmp(type, INT32_TYPE_SPECIFIER) == 0)
-    return INT32_TYPE;
+  if(strcmp(type, TYPE_SPECIFIER_INT32) == 0)
+    return TYPE_INT32;
 
-  if(strcmp(type, INT64_TYPE_SPECIFIER) == 0)
-    return INT64_TYPE;
+  if(strcmp(type, TYPE_SPECIFIER_INT64) == 0)
+    return TYPE_INT64;
 
-  if(strcmp(type, UINT8_TYPE_SPECIFIER) == 0)
-    return UINT8_TYPE;
+  if(strcmp(type, TYPE_SPECIFIER_UINT8) == 0)
+    return TYPE_UINT8;
 
-  if(strcmp(type, UINT16_TYPE_SPECIFIER) == 0)
-    return UINT16_TYPE;
+  if(strcmp(type, TYPE_SPECIFIER_UINT16) == 0)
+    return TYPE_UINT16;
 
-  if(strcmp(type, UINT32_TYPE_SPECIFIER) == 0)
-    return UINT32_TYPE;
+  if(strcmp(type, TYPE_SPECIFIER_UINT32) == 0)
+    return TYPE_UINT32;
 
-  if(strcmp(type, UINT64_TYPE_SPECIFIER) == 0)
-    return UINT64_TYPE;
+  if(strcmp(type, TYPE_SPECIFIER_UINT64) == 0)
+    return TYPE_UINT64;
   
-  if(strcmp(type, FLOAT_TYPE_SPECIFIER) == 0)
-    return FLOAT_TYPE;
+  if(strcmp(type, TYPE_SPECIFIER_FLOAT) == 0)
+    return TYPE_FLOAT;
 
-  if(strcmp(type, DOUBLE_TYPE_SPECIFIER) == 0)
-    return DOUBLE_TYPE;
+  if(strcmp(type, TYPE_SPECIFIER_DOUBLE) == 0)
+    return TYPE_DOUBLE;
 
-  if(strcmp(type, STRING_TYPE_SPECIFIER) == 0)
-    return STRING_TYPE;
+  if(strcmp(type, TYPE_SPECIFIER_STRING) == 0)
+    return TYPE_STRING;
 
-  return NONE_TYPE;
+  return TYPE_NONE;
 }
 
 static int32_t __is_name(char* id) {
@@ -151,45 +151,45 @@ static int32_t __is_string_literal(char* string_literal) {
 
 char* data_type_to_string(data_type_t type) {
   switch(type) {
-    case INT8_TYPE:
-      return INT8_TYPE_SPECIFIER;
-    case INT16_TYPE:
-      return INT16_TYPE_SPECIFIER;
-    case INT32_TYPE:
-      return INT32_TYPE_SPECIFIER;
-    case INT64_TYPE:
-      return INT64_TYPE_SPECIFIER;
-    case UINT8_TYPE:
-      return UINT8_TYPE_SPECIFIER;
-    case UINT16_TYPE:
-      return UINT16_TYPE_SPECIFIER;
-    case UINT32_TYPE:
-      return UINT32_TYPE_SPECIFIER;
-    case UINT64_TYPE:
-      return UINT64_TYPE_SPECIFIER;
-    case FLOAT_TYPE:
-      return FLOAT_TYPE_SPECIFIER;
-    case DOUBLE_TYPE:
-      return DOUBLE_TYPE_SPECIFIER;
-    case STRING_TYPE:
-      return STRING_TYPE_SPECIFIER;
+    case TYPE_INT8:
+      return TYPE_SPECIFIER_INT8;
+    case TYPE_INT16:
+      return TYPE_SPECIFIER_INT16;
+    case TYPE_INT32:
+      return TYPE_SPECIFIER_INT32;
+    case TYPE_INT64:
+      return TYPE_SPECIFIER_INT64;
+    case TYPE_UINT8:
+      return TYPE_SPECIFIER_UINT8;
+    case TYPE_UINT16:
+      return TYPE_SPECIFIER_UINT16;
+    case TYPE_UINT32:
+      return TYPE_SPECIFIER_UINT32;
+    case TYPE_UINT64:
+      return TYPE_SPECIFIER_UINT64;
+    case TYPE_FLOAT:
+      return TYPE_SPECIFIER_FLOAT;
+    case TYPE_DOUBLE:
+      return TYPE_SPECIFIER_DOUBLE;
+    case TYPE_STRING:
+      return TYPE_SPECIFIER_STRING;
   }
 
-  return NONE_TYPE_SPECIFIER;
+  return TYPE_SPECIFIER_NONE;
 }
 
 static inline data_type_t __soft_type_of(char* value) {
   if(__is_integer(value)) {
-    return INT32_TYPE;
+    return TYPE_INT32;
   }
 
   if(__is_real_number(value))
-    return FLOAT_TYPE;
+    return TYPE_FLOAT;
 
   if(__is_string_literal(value))
-    return STRING_TYPE;
+    return TYPE_STRING;
 
-  return NONE_TYPE;
+  return TYPE_NONE;
 }
 static int32_t __tokenize_line(
   char* line,
@@ -343,7 +343,7 @@ static inline void __make_none_var(parse_result_s* parse_res) {
     parse_res->success = 1;
     parse_res->var_name = (char*) 0;
     parse_res->var_data = (void*) 0;
-    parse_res->var_type = NONE_TYPE;
+    parse_res->var_type = TYPE_NONE;
 }
 
 static void __match_var_decleration(
@@ -416,28 +416,28 @@ static void __match_var_decleration(
   char* type_received = data_type_to_string(__soft_type_of(*value_as_string));
   int32_t type_error = 0;
   switch(var_type) {
-    case INT8_TYPE:
-    case INT16_TYPE:
-    case INT32_TYPE:
-    case INT64_TYPE:
+    case TYPE_INT8:
+    case TYPE_INT16:
+    case TYPE_INT32:
+    case TYPE_INT64:
       if(!__is_integer(*value_as_string))
         type_error = 1; 
 
       break;
-    case UINT8_TYPE:
-    case UINT16_TYPE:
-    case UINT32_TYPE:
-    case UINT64_TYPE:
+    case TYPE_UINT8:
+    case TYPE_UINT16:
+    case TYPE_UINT32:
+    case TYPE_UINT64:
       if(!__is_integer(*value_as_string) || __is_negative_sign(**value_as_string))
         type_error = 1;
 
       break;
-    case FLOAT_TYPE:
-    case DOUBLE_TYPE:
+    case TYPE_FLOAT:
+    case TYPE_DOUBLE:
       if(!__is_real_number(*value_as_string))
         type_error = 1;
       break;
-    case STRING_TYPE:
+    case TYPE_STRING:
       if(!__is_string_literal(*value_as_string))
         type_error = 1;
       break;
@@ -459,7 +459,7 @@ static void __match_var_decleration(
   }
 
   char* var_data_as_string = 0;
-  if(var_type != STRING_TYPE) {
+  if(var_type != TYPE_STRING) {
     var_data_as_string = strdup(*value_as_string);
   } else {
     size_t len = strlen(*value_as_string);
@@ -565,7 +565,7 @@ vector_s* parse_lines(int32_t fd) {
         parse_result_s parse_res;
         __parse_line(line, nl_index, line_num, &parse_res, vector_for_parse);
         
-        if(parse_res.success && parse_res.var_type != NONE_TYPE)
+        if(parse_res.success && parse_res.var_type != TYPE_NONE)
           vector_push(parse_results, &parse_res);
 
         buff_offset += nl_index + 1;
@@ -588,7 +588,7 @@ vector_s* parse_lines(int32_t fd) {
           vector_for_parse
         );
         
-        if(parse_res.success && parse_res.var_type != NONE_TYPE)
+        if(parse_res.success && parse_res.var_type != TYPE_NONE)
           vector_push(parse_results, &parse_res);
         
         free(vector_for_parse);
@@ -616,7 +616,7 @@ vector_s* parse_lines(int32_t fd) {
           vector_for_parse
         );
         
-        if(parse_res.success && parse_res.var_type != NONE_TYPE)
+        if(parse_res.success && parse_res.var_type != TYPE_NONE)
           vector_push(parse_results, &parse_res);
         
         buff_offset += bytes_overflowed + bytes_read; 
@@ -636,7 +636,7 @@ vector_s* parse_lines(int32_t fd) {
             vector_for_parse
           );
 
-          if(parse_res.success && parse_res.var_type != NONE_TYPE)
+          if(parse_res.success && parse_res.var_type != TYPE_NONE)
             vector_push(parse_results, &parse_res);
           
           free(vector_for_parse);

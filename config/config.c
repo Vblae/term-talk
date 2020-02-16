@@ -20,37 +20,37 @@ static config_var_s* __config_var_create(
   conf_var->name[len] = 0;
 
   switch(type) {
-    case INT8_TYPE:
+    case TYPE_INT8:
       conf_var->int8_val = (int8_t) atol(data);
      break;
-    case INT16_TYPE:
+    case TYPE_INT16:
       conf_var->int16_val = (int16_t) atol(data);;
       break;
-    case INT32_TYPE:
+    case TYPE_INT32:
       conf_var->int32_val = (int32_t) atol(data);
       break;
-    case INT64_TYPE:
+    case TYPE_INT64:
       conf_var->int64_val = atol(data);
       break;
-    case UINT8_TYPE:
+    case TYPE_UINT8:
       conf_var->uint8_val = (uint8_t) atol(data);
      break;
-    case UINT16_TYPE:
+    case TYPE_UINT16:
       conf_var->uint16_val = (uint16_t) atol(data);;
       break;
-    case UINT32_TYPE:
+    case TYPE_UINT32:
       conf_var->uint32_val = (uint32_t) atol(data);
       break;
-    case UINT64_TYPE:
+    case TYPE_UINT64:
       conf_var->uint64_val = (uint64_t) atol(data);
       break;
-    case FLOAT_TYPE:
+    case TYPE_FLOAT:
       conf_var->float_val = (float) atof(data);
       break;
-    case DOUBLE_TYPE:
+    case TYPE_DOUBLE:
       conf_var->double_val = atof(data);
       break;
-    case STRING_TYPE:
+    case TYPE_STRING:
       conf_var->string_val = strdup(data);
       break;
     default:
@@ -67,7 +67,7 @@ void __config_var_free(config_var_s* conf_var) {
   if(!conf_var)
     return;
 
-  if(conf_var->type == STRING_TYPE)
+  if(conf_var->type == TYPE_STRING)
     free(conf_var->string_val);
 
   __config_var_free(conf_var->left);
@@ -118,37 +118,37 @@ static void __print_config_var(config_var_s* conf_var) {
   printf(" type: %s\n", data_type_to_string(conf_var->type));
   printf(" value: ");
   switch(conf_var->type) {
-    case INT8_TYPE:
+    case TYPE_INT8:
       printf("%hhi\n", conf_var->int8_val);
       break;
-    case INT16_TYPE:
+    case TYPE_INT16:
       printf("%hi\n", conf_var->int16_val);
       break;
-    case INT32_TYPE:
+    case TYPE_INT32:
       printf("%d\n", conf_var->int32_val);
       break;
-    case INT64_TYPE:
+    case TYPE_INT64:
       printf("%lli\n", conf_var->int64_val);
       break;
-    case UINT8_TYPE:
+    case TYPE_UINT8:
       printf("%hhu\n", conf_var->uint8_val);
       break;
-    case UINT16_TYPE:
+    case TYPE_UINT16:
       printf("%hu\n", conf_var->uint16_val);
       break;
-    case UINT32_TYPE:
+    case TYPE_UINT32:
       printf("%u\n", conf_var->uint32_val);
       break;
-    case UINT64_TYPE:
+    case TYPE_UINT64:
       printf("%llu\n", conf_var->uint64_val);
       break;
-    case FLOAT_TYPE:
+    case TYPE_FLOAT:
       printf("%f\n", conf_var->float_val);
       break;
-    case DOUBLE_TYPE:
+    case TYPE_DOUBLE:
       printf("%f\n", conf_var->double_val);
       break;
-    case STRING_TYPE:
+    case TYPE_STRING:
       printf("%s\n", conf_var->string_val);
       break;
     default:
