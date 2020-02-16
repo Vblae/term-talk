@@ -33,6 +33,8 @@ UTILSRC = $(wildcard $(UTILDIR)/*.c)
 UTILHDR = $(wildcard $(INCDIR)/$(UTILDIR)/*.h)
 UTILOBJ = $(patsubst %.c, $(OBJDIR)/%.o, $(UTILSRC))
 
+all: util config tserv tdb
+
 $(OBJDIR)/$(TSERVDIR)/%.o: $(TSERVDIR)/%.c $(OBJDIR) $(OBJDIR)/$(TSERVDIR) $(TSERVHDR)
 	$(CC) $(CFLAGS) -I $(INCDIR) -c -o $@ $<
 
@@ -73,7 +75,6 @@ $(OBJDIR)/$(UTILDIR):
 $(BINDIR):
 	mkdir $(BINDIR)
 
-all: util config tserv tdb
 
 clean:
 	rm -fr $(OBJDIR) $(BINDIR) 
