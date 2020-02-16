@@ -463,7 +463,9 @@ static void __match_var_decleration(
     var_data_as_string = strdup(*value_as_string);
   } else {
     size_t len = strlen(*value_as_string);
+    // strip closing string literal '
     (*value_as_string)[len - 1] = 0;
+    // strip opening string literal '
     var_data_as_string = strdup((*value_as_string) + 1);
   }
 

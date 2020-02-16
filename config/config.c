@@ -1,8 +1,8 @@
+#include <fcntl.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
-#include <fcntl.h>
-#include <string.h>
+#include <unistd.h>
 
 #include "config/config.h"
 #include "util/vector.h"
@@ -246,16 +246,15 @@ config_s* load_config(char* config_file_path) {
     return 0;
   }
   
-  vector_s* parse_results = parse_lines(fd);
   config_s* conf = config_create();
-  if(!parse_results)
-    return 0;
-
   if(!conf) {
     printf("config: error: failed to allocate memory for config\n");
-    vector_free(parse_results);
+    close(fd);
     return 0;
   }
+
+  vector_s* parse_results = parse_lines(fd);
+  close(fd);
 
   if(parse_results->len == 0) {
     vector_free(parse_results);

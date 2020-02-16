@@ -111,7 +111,7 @@ tree_map_s* tree_map_create_with_allocators(
   }
   
   if(!val_size) {
-    m_log_error("treemap: error: val_size can not be zeror\n");
+    m_log_error("treemap: error: val_size can not be zero\n");
     return 0;
   }
 
