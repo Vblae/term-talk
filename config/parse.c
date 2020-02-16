@@ -584,15 +584,25 @@ vector_s* parse_lines(int32_t fd) {
         parse_result_s parse_res;
         __parse_line(line, nl_index, line_num, &parse_res, vector_for_parse);
         
-        if(parse_res.success && parse_res.var_type != TYPE_NONE)
-          vector_push(parse_results, &parse_res);
+        if(!parse_res.success || parse_res.var_type == TYPE_NONE) {
+          vector_free(parse_results);
+          vector_free(vector_for_parse);
+          return NULL;
+        }
 
+        vector_push(parse_results, &parse_res);
         buff_offset += nl_index + 1;
         line_num++;
       }
 
       char check = 0;
       size_t check_read = read(fd, &check, 1);
+
+      if(buff_offset == buff_len && check_read == 0) {
+        vector_free(vector_for_parse);
+        return parse_results;
+      }
+
       if(!saw_nl && check_read == 0) {
         char line[bytes_overflowed + bytes_read + 1];
         memcpy(line, &buff[buff_offset], bytes_overflowed + bytes_read);
@@ -606,11 +616,15 @@ vector_s* parse_lines(int32_t fd) {
           &parse_res,
           vector_for_parse
         );
-        
-        if(parse_res.success && parse_res.var_type != TYPE_NONE)
-          vector_push(parse_results, &parse_res);
-        
-        free(vector_for_parse);
+
+        if(!parse_res.success || parse_res.var_type == TYPE_NONE) {
+          vector_free(parse_results);
+          vector_free(vector_for_parse);
+          return NULL;
+        }
+
+        vector_push(parse_results, &parse_res);
+        vector_free(vector_for_parse);
         return parse_results;
       }
       
@@ -618,7 +632,7 @@ vector_s* parse_lines(int32_t fd) {
         LOGE("parser: error: line %d: line is too long\n", line_num);
         vector_free(parse_results);
         vector_free(vector_for_parse);
-        return 0;
+        return NULL;
       }
       
       if(!saw_nl && check_read == 1 && check == '\n') {
@@ -634,10 +648,14 @@ vector_s* parse_lines(int32_t fd) {
           &parse_res,
           vector_for_parse
         );
-        
-        if(parse_res.success && parse_res.var_type != TYPE_NONE)
-          vector_push(parse_results, &parse_res);
-        
+
+        if(!parse_res.success || parse_res.var_type == TYPE_NONE) {
+          vector_free(parse_results);
+          vector_free(vector_for_parse);
+          return NULL;
+        }
+
+        vector_push(parse_results, &parse_res);
         buff_offset += bytes_overflowed + bytes_read; 
         lseek(fd, -1, SEEK_CUR);
       } else if(saw_nl) {
@@ -655,10 +673,14 @@ vector_s* parse_lines(int32_t fd) {
             vector_for_parse
           );
 
-          if(parse_res.success && parse_res.var_type != TYPE_NONE)
-            vector_push(parse_results, &parse_res);
-          
-          free(vector_for_parse);
+          if(!parse_res.success || parse_res.var_type == TYPE_NONE) {
+            vector_free(parse_results);
+            vector_free(vector_for_parse);
+            return NULL;
+          }
+
+          vector_push(parse_results, &parse_res);
+          vector_free(vector_for_parse);
           return parse_results;
         }
         
@@ -676,7 +698,7 @@ vector_s* parse_lines(int32_t fd) {
       break;
   }
 
-  free(vector_for_parse);
+  vector_free(vector_for_parse);
   return parse_results;
 }
 

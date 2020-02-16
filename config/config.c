@@ -223,12 +223,12 @@ void config_free(config_s* conf) {
 config_var_s* config_get(config_s* conf, char* name) {
   if(!conf) {
     LOGE("config: error: null config passed to config_get()\n");
-    return 0;
+    return NULL;
   }
 
   if(!name) {
     LOGW("config: warn: null name passed to config_get()\n");
-    return 0;
+    return NULL;
   }
 
   return __config_get_helper(conf->root, name);
@@ -237,24 +237,29 @@ config_var_s* config_get(config_s* conf, char* name) {
 config_s* load_config(char* config_file_path) {
   if(!config_file_path) {
     LOGE("config: error: invalid config file path '%s'\n", config_file_path);
-    return 0;
+    return NULL;
   }
 
   int32_t fd = open(config_file_path, O_RDONLY);
   if(fd == -1) {
     LOGE("config: error: could not open file '%s'\n", config_file_path);
-    return 0;
+    return NULL;
   }
   
   config_s* conf = config_create();
   if(!conf) {
     LOGE("config: error: failed to allocate memory for config\n");
     close(fd);
-    return 0;
+    return NULL;
   }
 
   vector_s* parse_results = parse_lines(fd);
   close(fd);
+
+  if(!parse_results) {
+    LOGE("config: error: failed to parse config file\n");
+    return NULL;
+  }
 
   if(parse_results->len == 0) {
     vector_free(parse_results);
@@ -268,7 +273,7 @@ config_s* load_config(char* config_file_path) {
     LOGE("config: error: failed to allocate memory for config var block\n");
     vector_free(parse_results);
     config_free(conf);
-    return 0;
+    return NULL;
   }
 
   vector_s* conf_vars = vector_create(parse_results->len, sizeof(config_var_s*));
@@ -276,7 +281,7 @@ config_s* load_config(char* config_file_path) {
     LOGE("config: error: failes to allocate memory for config var vector\n");
     vector_free(parse_results);
     config_free(conf);
-    return 0;
+    return NULL;
   }
 
   for(int32_t i = 0; i < parse_results->len; i++) {
