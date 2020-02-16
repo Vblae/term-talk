@@ -12,7 +12,7 @@ static config_var_s* __config_var_create(
   config_var_s* conf_var,
   char* name,
   void* data,
-  data_type_t type
+  data_type_e type
 ) {
   size_t name_len = strlen(name);
   size_t len = name_len < MAX_VAR_LEN ? name_len : MAX_VAR_LEN;
@@ -53,6 +53,8 @@ static config_var_s* __config_var_create(
     case TYPE_STRING:
       conf_var->string_val = strdup(data);
       break;
+    case TYPE_NONE:
+      // do nothing
     default:
       break;
   }

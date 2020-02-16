@@ -5,32 +5,32 @@
 
 #include "util/vector.h"
 
-#define TYPE_NONE 0x00
-#define TYPE_INT8 0x10
-#define TYPE_INT16 0x20
-#define TYPE_INT32 0x30
-#define TYPE_INT64 0x40
-#define TYPE_UINT8 0x50
-#define TYPE_UINT16 0x60
-#define TYPE_UINT32 0x70
-#define TYPE_UINT64 0x80
-#define TYPE_FLOAT 0x90
-#define TYPE_DOUBLE 0xA0
-#define TYPE_STRING 0xB0
-
-typedef int32_t data_type_t;
+typedef enum {
+  TYPE_NONE = 0x00,
+  TYPE_INT8 = 0x10,
+  TYPE_INT16 = 0x20,
+  TYPE_INT32 = 0x30,
+  TYPE_INT64 = 0x40,
+  TYPE_UINT8 = 0x50,
+  TYPE_UINT16 = 0x60,
+  TYPE_UINT32 = 0x70,
+  TYPE_UINT64 = 0x80,
+  TYPE_FLOAT = 0x90,
+  TYPE_DOUBLE = 0xA0,
+  TYPE_STRING = 0xB0,
+} data_type_e;
 
 struct parse_result {
   char* var_name;
   void* var_data;
 
-  data_type_t var_type;
+  data_type_e var_type;
   int32_t success;
 };
 
 typedef struct parse_result parse_result_s;
 
-char* data_type_to_string(data_type_t type);
+const char* data_type_to_string(data_type_e type);
 
 vector_s* parse_lines(int32_t fd);
 

@@ -11,7 +11,7 @@
 struct config_var {
   char name[MAX_VAR_LEN + 1];
 
-  data_type_t type;
+  data_type_e type;
   union {
     int8_t int8_val;
     int16_t int16_val;

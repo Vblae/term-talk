@@ -58,7 +58,7 @@ static inline int32_t __is_white_space(char c) {
   return c == ' ' || c == '\r' || c == '\t';
 }
 
-static data_type_t __is_type_specifier(char* type) {
+static data_type_e __is_type_specifier(char* type) {
   if(strcmp(type, TYPE_SPECIFIER_INT8) == 0)
     return TYPE_INT8;
 
@@ -162,7 +162,7 @@ static int32_t __is_string_literal(char* string_literal) {
   return string_literal[0] == '\'' && string_literal[literal_len - 1] == '\'';
 }
 
-char* data_type_to_string(data_type_t type) {
+const char* data_type_to_string(data_type_e type) {
   switch(type) {
     case TYPE_INT8:
       return TYPE_SPECIFIER_INT8;
@@ -186,12 +186,12 @@ char* data_type_to_string(data_type_t type) {
       return TYPE_SPECIFIER_DOUBLE;
     case TYPE_STRING:
       return TYPE_SPECIFIER_STRING;
+    default:
+      return TYPE_SPECIFIER_NONE;
   }
-
-  return TYPE_SPECIFIER_NONE;
 }
 
-static inline data_type_t __soft_type_of(char* value) {
+static inline data_type_e __soft_type_of(char* value) {
   if(__is_integer(value)) {
     return TYPE_INT32;
   }
@@ -377,7 +377,7 @@ static void __match_var_decleration(
   char** colon = vector_get_of(char*, vector, 2);
   char** value_as_string = vector_get_of(char*, vector, 3);
   
-  data_type_t var_type;
+  data_type_e var_type;
   if(!(var_type = __is_type_specifier(*type_specifier))) {
     m_log_error(
       "error: parser: invalid type '%s' in line %lu\n==>%s\n",
@@ -426,7 +426,7 @@ static void __match_var_decleration(
     return;
   }
 
-  char* type_received = data_type_to_string(__soft_type_of(*value_as_string));
+  const char* type_received = data_type_to_string(__soft_type_of(*value_as_string));
   int32_t type_error = 0;
   switch(var_type) {
     case TYPE_INT8:
@@ -454,6 +454,12 @@ static void __match_var_decleration(
       if(!__is_string_literal(*value_as_string))
         type_error = 1;
       break;
+    case TYPE_NONE:
+      // getting here should not happen, if it does then
+      // you should fix it
+      m_log_error("parser: error: invalid type 'NONE' received\n");
+      __make_none_var(parse_res);
+      return;
   }
   
   if(type_error) {
