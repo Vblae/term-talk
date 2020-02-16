@@ -165,38 +165,32 @@ void tree_set_free(tree_set_s* set) {
 static int32_t __tree_set_insert_helper(
   tree_set_wrapper_s* set,
   tree_set_node_s* root,
-  void* key
+  tree_set_node_s* new_node
 ) {
-  int32_t comparison = set->__key_comp(key, root->key);
+  int32_t comparison = set->__key_comp(new_node->key, root->key);
   if(comparison == 0) {
     return 1;
   } else if(comparison < 0) {
     if(root->left)
-      return __tree_set_insert_helper(set, root->left, key);
+      return __tree_set_insert_helper(set, root->left, new_node);
 
-    root->left = __tree_set_node_create(set, key);
-    if(root->left)
-      return 1;
-      
-    return 0;
+    root->left = new_node;
+    return root->left != NULL;
   } else {
     if(root->right)
-      return __tree_set_insert_helper(set, root->right, key);
+      return __tree_set_insert_helper(set, root->right, new_node);
 
-    root->right = __tree_set_node_create(set, key);
-    if(root->right)
-      return 1;
-
-    return 0;
+    root->right = new_node;
+    return root->right != NULL;
   }
 }
 
-static int32_t __tree_set_insert(tree_set_wrapper_s* set, void* key) {
+static int32_t __tree_set_insert(tree_set_wrapper_s* set, tree_set_node_s* new_node) {
   if(set->__root)
-    return __tree_set_insert_helper(set, set->__root, key);
+    return __tree_set_insert_helper(set, set->__root, new_node);
 
-  set->__root = __tree_set_node_create(set, key);
-  return set->__root != 0;
+  set->__root = new_node;
+  return set->__root != NULL;
 }
 
 int32_t tree_set_insert(tree_set_s* set, void* key) {
@@ -210,7 +204,16 @@ int32_t tree_set_insert(tree_set_s* set, void* key) {
     return 0;
   }
 
-  int32_t inserted = __tree_set_insert(((tree_set_wrapper_s*) set), key);
+  if(tree_set_contains(set, key))
+    return 1;
+
+  tree_set_node_s* new_node = __tree_set_node_create(((tree_set_wrapper_s*) set), key);
+  if(!new_node) {
+    LOGE("treeset: error: failed to alloc mem for new node\n");
+    return 0;
+  }
+
+  int32_t inserted = __tree_set_insert(((tree_set_wrapper_s*) set), new_node);
   if(inserted)
     set->size++;
 
