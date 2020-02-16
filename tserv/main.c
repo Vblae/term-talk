@@ -7,7 +7,7 @@
 #include "util/treeset.h"
 
 static void __test(char* config_file_path) {
-  config_s* conf = load_config(config_file_path);
+  config_s* conf = config_load(config_file_path);
   printf("p: %p\n", conf);
 
   config_var_s* _5 = config_get(conf, "_5");

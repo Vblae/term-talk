@@ -44,7 +44,7 @@ void config_free(config_s* conf);
 
 config_var_s* config_get(config_s* conf, char* name);
 
-config_s* load_config(char* config_file_path);
+config_s* config_load(char* config_file_path);
 
 #endif
 

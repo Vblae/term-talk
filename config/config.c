@@ -234,7 +234,7 @@ config_var_s* config_get(config_s* conf, char* name) {
   return __config_get_helper(conf->root, name);
 }
 
-config_s* load_config(char* config_file_path) {
+config_s* config_load(char* config_file_path) {
   if(!config_file_path) {
     LOGE("config: error: invalid config file path '%s'\n", config_file_path);
     return NULL;
