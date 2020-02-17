@@ -166,6 +166,9 @@ static int32_t __tree_set_insert_helper(
   tree_set_node_s* root,
   tree_set_node_s* new_node
 ) {
+  if(!root || !new_node)
+    return 1;
+
   int32_t comparison = set->__key_comp(new_node->key, root->key);
   if(comparison == 0) {
     return 1;
@@ -217,6 +220,74 @@ int32_t tree_set_insert(tree_set_s* set, void* key) {
     set->size++;
 
   return inserted;
+}
+
+int32_t __tree_set_delete_helper(
+  tree_set_wrapper_s* set,
+  tree_set_node_s** node_storage,
+  tree_set_node_s* node,
+  void* key
+) {
+  if(!node_storage || !node)
+    return 1;
+
+  int32_t comparison = set->__key_comp(key, node->key);
+  if(comparison < 0)
+    return __tree_set_delete_helper(set, &node->left, node->left, key);
+
+  if(comparison > 0)
+    return __tree_set_delete_helper(set, &node->right, node->right, key);
+
+  tree_set_node_s* node_left = node->left;
+  tree_set_node_s* node_right = node->right;
+
+  node->left = NULL;
+  node->right = NULL;
+  __tree_set_node_free(set, node);
+
+  if(node_left == NULL && node_right == NULL) {
+    *node_storage = NULL;
+    return 1;
+  }
+
+  if(node_left != NULL && node_right != NULL) {
+    __tree_set_insert_helper(set, node_right, node_left);
+    *node_storage = node_right;
+    return 1;
+  }
+
+  if(node_right != NULL)
+    *node_storage = node_right;
+  else
+    *node_storage = node_left;
+
+  return 1;
+}
+
+int32_t __tree_set_delete(tree_set_wrapper_s* set, void* key) {
+  return __tree_set_delete_helper(set, &set->__root, set->__root, key);
+}
+
+int32_t tree_set_delete(tree_set_s* set, void* key) {
+  if(!set) {
+    LOGE("treeset: error: cannot delete from a null tree set\n");
+    return 0;
+  }
+
+  if(!key) {
+    LOGE("treeset: error: cannot delete null key from tree set\n");
+    return 0;
+  }
+
+  if(!tree_set_contains(set, key)) {
+    return 1;
+  }
+
+  int32_t deleted = __tree_set_delete(AS_WRAPPER(set), key);
+  if(deleted)
+    set->size--;
+
+  return deleted;
 }
 
 static int32_t __tree_set_contains_helper(

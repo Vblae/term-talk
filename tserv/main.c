@@ -143,6 +143,19 @@ static void __test_tree_set() {
   }
 
   printf("tree set size %lu\n", set->size);
+
+  printf("calling tree_set_delete() with: %i\n", keys[0]);
+  tree_set_delete(set, &keys[0]);
+  tree_set_delete(set, &keys[3]);
+  printf("tree set size %lu\n", set->size);
+
+  int32_t status = tree_set_delete(set, &keys[0]);
+  printf("delete non present item %i\n", status);
+  for(int32_t i = 0; i < 8; i++) {
+    int32_t result = tree_set_contains(set, &keys[i]);
+    printf("query key: %d found: %s\n", keys[i], result ? "YES" : "NO");
+  }
+
   tree_set_free(set);
 }
 

@@ -44,6 +44,8 @@ void tree_set_free(tree_set_s* set);
 
 int32_t tree_set_insert(tree_set_s* set, void* key);
 
+int32_t tree_set_delete(tree_set_s* set, void* key);
+
 int32_t tree_set_contains(tree_set_s* set, void* key);
 
 void tree_set_print(
