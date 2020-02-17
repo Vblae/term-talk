@@ -5,6 +5,8 @@
 #include "util/treemap.h"
 #include "util/log.h"
 
+#define AS_WRAPPER(map) ((tree_map_wrapper_s*) (map))
+
 typedef struct tree_map_node {
   void* key;
   void* val;
@@ -55,27 +57,27 @@ static tree_map_node_s* __tree_map_node_create(
   void* key,
   void* val
 ) {
-  tree_map_node_s* node = (tree_map_node_s*) malloc(sizeof(tree_map_node_s));
+  tree_map_node_s* node = malloc(sizeof(tree_map_node_s));
   if(!node) {
     LOGE("treemap: error: failed to allocate mem for tree map node\n");
     return 0;
   }
 
   void* key_space = malloc(map->__key_size);
-  void* val_space = malloc(map->__val_size);
   if(!key_space) {
     LOGE("treemap: error: failed to allocate mem for key space\n");
     free(node);
     return NULL;
   }
 
-  if(!key_space) {
+  void* val_space = malloc(map->__val_size);
+  if(!val_space) {
     LOGE("treemap: error: failed to allocate mem for val space\n");
     free(key_space);
     free(node);
     return NULL;
   }
-  
+
   int32_t key_allocation_succeeded;
   if(map->__key_allocator) {
     key_allocation_succeeded = map->__key_allocator(key, key_space);
@@ -106,23 +108,21 @@ tree_map_s* tree_map_create_with_allocators(
   tree_map_key_deallocator_f key_deallocator
 ) {
   if(!key_size) {
-    LOGE("treemap: error: key_size can not be zero\n");
+    LOGE("treemap: error: key_size cannot be zero\n");
     return NULL;
   }
-  
+
   if(!val_size) {
-    LOGE("treemap: error: val_size can not be zero\n");
+    LOGE("treemap: error: val_size cannot be zero\n");
     return NULL;
   }
 
   if(!key_comp) {
-    LOGE("treemap: error: key comparator function can not be null\n");
+    LOGE("treemap: error: key comparator function cannot be null\n");
     return NULL;
   }
 
-  tree_map_wrapper_s* tree_map =
-    (tree_map_wrapper_s*) malloc(sizeof(tree_map_wrapper_s));
-  
+  tree_map_wrapper_s* tree_map =  malloc(sizeof(tree_map_wrapper_s));
   if(!tree_map) {
     LOGE("treemap: error: failed to allocate mem for tree_map\n");
     return NULL;
@@ -169,13 +169,13 @@ tree_map_s* tree_map_create(
 static void __tree_map_node_free(tree_map_wrapper_s* map, tree_map_node_s* root) {
   if(!map || !root)
     return;
-  
+
   __tree_map_node_free(map, root->left);
   __tree_map_node_free(map, root->right);
 
   if(map->__key_deallocator)
     map->__key_deallocator(root->key);
-  
+
   free(root->key);
   free(root->val);
   free(root);
@@ -190,7 +190,7 @@ static void __tree_map_free(tree_map_wrapper_s* map) {
 }
 
 void tree_map_free(tree_map_s* map) {
-  __tree_map_free((tree_map_wrapper_s*) map);
+  __tree_map_free(AS_WRAPPER(map));
 }
 
 static int32_t __tree_map_insert_helper(
@@ -243,7 +243,7 @@ int32_t tree_map_insert(tree_map_s* map, void* key, void* val) {
     return 0;
   }
 
-  int32_t inserted = __tree_map_insert((tree_map_wrapper_s*) map, key, val);
+  int32_t inserted = __tree_map_insert(AS_WRAPPER(map), key, val);
   if(inserted)
     map->size++;
 
@@ -274,16 +274,16 @@ static void* __tree_map_get(tree_map_wrapper_s* map, void* key) {
 
 void* tree_map_get(tree_map_s* map, void* key) {
   if(!map) {
-    LOGE("treemap: error: can not perform find in null map\n");
+    LOGE("treemap: error: cannot perform find in null map\n");
     return 0;
   }
 
   if(!key) {
-    LOGE("treemap: error: can not perform find on null key\n");
+    LOGE("treemap: error: cannot perform find on null key\n");
     return 0;
   }
 
-  return __tree_map_get((tree_map_wrapper_s*) map, key);
+  return __tree_map_get(AS_WRAPPER(map), key);
 }
 
 void __tree_map_print_helper(
@@ -318,6 +318,6 @@ void tree_map_print(
   void (*key_printer)(void*),
   void (*val_printer)(void*)
 ) {
-  return __tree_map_print((tree_map_wrapper_s*) map, key_printer, val_printer);
+  return __tree_map_print(AS_WRAPPER(map), key_printer, val_printer);
 }
 

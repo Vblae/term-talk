@@ -4,6 +4,7 @@
 #include "util/treeset.h"
 #include "util/log.h"
 
+#define AS_WRAPPER(set) ((tree_set_wrapper_s*) (set))
 
 typedef struct tree_set_node {
   void* key;
@@ -48,7 +49,7 @@ void tree_set_string_key_deallocator(void* ptr) {
 }
 
 static tree_set_node_s* __tree_set_node_create(tree_set_wrapper_s* set, void* key) {
-  tree_set_node_s* node = (tree_set_node_s*) malloc(sizeof(tree_set_node_s));
+  tree_set_node_s* node = malloc(sizeof(tree_set_node_s));
   if(!node) {
     LOGE("treeset: error: failed to allocate memory for tree set node\n");
     return NULL;
@@ -97,9 +98,7 @@ tree_set_s* tree_set_create_with_allocators(
     return NULL;
   }
 
-  tree_set_wrapper_s* tree_set =
-    (tree_set_wrapper_s*) malloc(sizeof(tree_set_wrapper_s));
-
+  tree_set_wrapper_s* tree_set = malloc(sizeof(tree_set_wrapper_s));
   if(!tree_set) {
     LOGE("treeset: error: failed to allocate memory for tree set\n");
     return NULL;
@@ -159,7 +158,7 @@ static void __tree_set_free(tree_set_wrapper_s* set) {
 }
 
 void tree_set_free(tree_set_s* set) {
-  __tree_set_free((tree_set_wrapper_s*) set);
+  __tree_set_free(AS_WRAPPER(set));
 }
 
 static int32_t __tree_set_insert_helper(
@@ -207,13 +206,13 @@ int32_t tree_set_insert(tree_set_s* set, void* key) {
   if(tree_set_contains(set, key))
     return 1;
 
-  tree_set_node_s* new_node = __tree_set_node_create(((tree_set_wrapper_s*) set), key);
+  tree_set_node_s* new_node = __tree_set_node_create(AS_WRAPPER(set), key);
   if(!new_node) {
     LOGE("treeset: error: failed to alloc mem for new node\n");
     return 0;
   }
 
-  int32_t inserted = __tree_set_insert(((tree_set_wrapper_s*) set), new_node);
+  int32_t inserted = __tree_set_insert(AS_WRAPPER(set), new_node);
   if(inserted)
     set->size++;
 
@@ -259,7 +258,7 @@ int32_t tree_set_contains(tree_set_s* set, void* key) {
     return 0;
   }
 
-  return __tree_set_contains((tree_set_wrapper_s*) set, key);
+  return __tree_set_contains(AS_WRAPPER(set), key);
 }
 
 void __tree_set_print_helper(
@@ -293,6 +292,6 @@ void tree_set_print(
   void (*key_printer)(void*),
   void (*val_printer)(void*)
 ) {
-  return __tree_set_print((tree_set_wrapper_s*) set, key_printer, val_printer);
+  return __tree_set_print(AS_WRAPPER(set), key_printer, val_printer);
 }
 
