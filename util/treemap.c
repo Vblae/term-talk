@@ -88,6 +88,7 @@ static tree_map_node_s* __tree_map_node_create(
 
   if(!key_allocation_succeeded) {
     free(key_space);
+    free(val_space);
     free(node);
     return NULL;
   }
@@ -193,74 +194,17 @@ void tree_map_free(tree_map_s* map) {
   __tree_map_free(AS_WRAPPER(map));
 }
 
-static int32_t __tree_map_insert_helper(
-  tree_map_wrapper_s* map,
-  tree_map_node_s* root,
-  void* key,
-  void* val
-) {
-  int comparison = map->__key_comp(key, root->key);
-  if(comparison == 0) {
-    memcpy(root->val, val, map->__val_size);
-    return 1;
-  } else if(comparison < 0) {
-    if(root->left)
-      return __tree_map_insert_helper(map, root->left, key, val);
-
-    root->left = __tree_map_node_create(map, key, val);
-    if(root->left)
-      return 1;
-
-    return 0;
-  } else {
-    if(root->right)
-      return __tree_map_insert_helper(map, root->right, key, val);
-
-    root->right = __tree_map_node_create(map, key, val);
-    if(root->right)
-      return 1;
-
-    return 0;
-  }
-}
-
-static int32_t __tree_map_insert(tree_map_wrapper_s* map, void* key, void* val) {
-  if(map->__root)
-    return __tree_map_insert_helper(map, map->__root, key, val);
-
-  map->__root = __tree_map_node_create(map, key, val);
-  return map->__root != 0;
-}
-
-int32_t tree_map_insert(tree_map_s* map, void* key, void* val) {
-  if(!map) {
-    LOGE("treemap: error: cannot insert into null map\n");
-    return 0;
-  }
-
-  if(!key) {
-    LOGE("treemap: error:cannot insert null key into map\n");
-    return 0;
-  }
-
-  int32_t inserted = __tree_map_insert(AS_WRAPPER(map), key, val);
-  if(inserted)
-    map->size++;
-
-  return inserted;
-}
-
-static void* __tree_map_get_helper(
+static tree_map_node_s* __tree_map_get_helper(
   tree_map_wrapper_s* map,
   tree_map_node_s* root,
   void* key
 ) {
   if(!root)
-    return 0;
+    return NULL;
 
   int32_t comparison = map->__key_comp(key, root->key);
   if(comparison == 0)
-    return root->val;
+    return root;
 
   if(comparison < 0)
     return __tree_map_get_helper(map, root->left, key);
@@ -268,7 +212,7 @@ static void* __tree_map_get_helper(
   return __tree_map_get_helper(map, root->right, key);
 }
 
-static void* __tree_map_get(tree_map_wrapper_s* map, void* key) {
+static tree_map_node_s* __tree_map_get(tree_map_wrapper_s* map, void* key) {
   return __tree_map_get_helper(map, map->__root, key);
 }
 
@@ -283,7 +227,141 @@ void* tree_map_get(tree_map_s* map, void* key) {
     return 0;
   }
 
-  return __tree_map_get(AS_WRAPPER(map), key);
+  tree_map_node_s* node = __tree_map_get(AS_WRAPPER(map), key);
+  if(!node)
+    return NULL;
+
+  return node->val;
+}
+
+static int32_t __tree_map_insert_helper(
+  tree_map_wrapper_s* map,
+  tree_map_node_s* root,
+  tree_map_node_s* new_node
+) {
+  int comparison = map->__key_comp(new_node->key, root->key);
+  if(comparison == 0) {
+    return 1;
+  } else if(comparison < 0) {
+    if(root->left)
+      return __tree_map_insert_helper(map, root->left, new_node);
+
+    root->left = new_node;
+    return root->left != NULL;
+  } else {
+    if(root->right)
+      return __tree_map_insert_helper(map, root->right, new_node);
+
+    root->right = new_node;
+    return root->right != NULL;
+  }
+}
+
+static int32_t __tree_map_insert(tree_map_wrapper_s* map, tree_map_node_s* new_node) {
+  if(map->__root)
+    return __tree_map_insert_helper(map, map->__root, new_node);
+
+  map->__root = new_node;
+  return map->__root != NULL;
+}
+
+int32_t tree_map_insert(tree_map_s* map, void* key, void* val) {
+  if(!map) {
+    LOGE("treemap: error: cannot insert into null map\n");
+    return 0;
+  }
+
+  if(!key) {
+    LOGE("treemap: error:cannot insert null key into map\n");
+    return 0;
+  }
+
+  tree_map_node_s* node = __tree_map_get(AS_WRAPPER(map), key);
+  if(node) {
+    memcpy(node->val, val, AS_WRAPPER(map)->__val_size);
+    return 1;
+  }
+
+  tree_map_node_s* new_node = __tree_map_node_create(AS_WRAPPER(map), key, val);
+  if(!new_node) {
+    LOGE("treemap: error: failed to alloc mem for new node\n");
+    return 0;
+  }
+
+  int32_t inserted = __tree_map_insert(AS_WRAPPER(map), new_node);
+  if(inserted)
+    map->size++;
+
+  return inserted;
+}
+
+int32_t __tree_map_delete_helper(
+  tree_map_wrapper_s* map,
+  tree_map_node_s** node_storage,
+  tree_map_node_s* node,
+  void* key
+) {
+  if(!node_storage || !node)
+    return 1;
+
+  int32_t comparison = map->__key_comp(key, node->key);
+  if(comparison < 0)
+    return __tree_map_delete_helper(map, &node->left, node->left, key);
+
+  if(comparison > 0)
+    return __tree_map_delete_helper(map, &node->right, node->right, key);
+
+  tree_map_node_s* node_left = node->left;
+  tree_map_node_s* node_right = node->right;
+
+  node->left = NULL;
+  node->right = NULL;
+  __tree_map_node_free(map, node);
+
+  if(node_left == NULL && node_right == NULL) {
+    *node_storage = NULL;
+    return 1;
+  }
+
+  if(node_left != NULL && node_right != NULL) {
+    __tree_map_insert_helper(map, node_right, node_left);
+    *node_storage = node_right;
+    return 1;
+  }
+
+  if(node_right != NULL)
+    *node_storage = node_right;
+  else
+    *node_storage = node_left;
+
+  return 1;
+}
+
+int32_t __tree_map_delete(tree_map_wrapper_s* map, void* key) {
+  return __tree_map_delete_helper(map, &map->__root, map->__root, key);
+}
+
+int32_t tree_map_delete(tree_map_s* map, void* key) {
+  if(!map) {
+    LOGE("treemap: error: cannot delete form null map\n");
+    return 0;
+  }
+
+  if(!key) {
+    LOGE("treemap: error: cannot delete null key\n");
+    return 0;
+  }
+
+  void* node = tree_map_get(map, key);
+  if(!node) {
+    return 1;
+  }
+
+  int32_t deleted = __tree_map_delete(AS_WRAPPER(map), key);
+  if(deleted)
+    map->size--;
+
+  return deleted;
 }
 
 void __tree_map_print_helper(

@@ -47,9 +47,12 @@ tree_map_s* tree_map_create(
 
 void tree_map_free(tree_map_s* map);
 
+void* tree_map_get(tree_map_s* map, void* key);
+
 int32_t tree_map_insert(tree_map_s* map, void* key, void* val);
 
-void* tree_map_get(tree_map_s* map, void* key);
+int32_t tree_map_delete(tree_map_s* map, void* key);
+
 
 void tree_map_print(
   tree_map_s* map,

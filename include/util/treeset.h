@@ -37,16 +37,16 @@ tree_set_s* tree_set_create_of_int_key();
 
 tree_set_s* tree_set_create(
   size_t key_size,
-  tree_set_key_comparator_f key_comp)
-;
+  tree_set_key_comparator_f key_comp
+);
 
 void tree_set_free(tree_set_s* set);
+
+int32_t tree_set_contains(tree_set_s* set, void* key);
 
 int32_t tree_set_insert(tree_set_s* set, void* key);
 
 int32_t tree_set_delete(tree_set_s* set, void* key);
-
-int32_t tree_set_contains(tree_set_s* set, void* key);
 
 void tree_set_print(
   tree_set_s* set,

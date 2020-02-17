@@ -98,9 +98,7 @@ static void __test_tree_map_string_keys() {
     "they key",
     "this key"
   };
-  printf("WHAT WHAT %p %p\n", &keys[0], keys[0]);
-  printf("WHAT WHAT %p %p\n", &keys[1], keys[1]);
-  int32_t vals[] = {1, 2, 3, 10};
+  int32_t vals[] = {10, 3, 2, 1};
 
   printf("calling tree_map_insert() with:\n");
   for(int32_t i = 0; i < 4; i++) {
@@ -110,6 +108,21 @@ static void __test_tree_map_string_keys() {
     printf("   k* => v*: %p => %p\n", &keys[i], &vals[i]);
   }
   printf("finish inserting\n");
+  tree_map_print(map, int_key_printer, float_val_printer);
+  printf("calling tree_map_get() with:\n");
+  for(int32_t i = 0; i < 4; i++) {
+    void* result = tree_map_get(map, &keys[i]);
+    printf("query key: %s expect: %i got %p -> ", keys[i], vals[i], result);
+    if(!result)
+      printf("None\n");
+    else
+      printf("%i\n", *((int*) result));
+  }
+
+  printf("tree map size %lu\n", map->size);
+  printf("calling tree_map_delete() with: %s\n", keys[1]);
+  tree_map_delete(map, &keys[1]);
+  printf("tree map size %lu\n", map->size);
   tree_map_print(map, int_key_printer, float_val_printer);
   printf("calling tree_map_get() with:\n");
   for(int32_t i = 0; i < 4; i++) {

@@ -161,6 +161,49 @@ void tree_set_free(tree_set_s* set) {
   __tree_set_free(AS_WRAPPER(set));
 }
 
+static int32_t __tree_set_contains_helper(
+  tree_set_wrapper_s* set,
+  tree_set_node_s* node,
+  void* key
+) {
+  int32_t comparison = set->__key_comp(key, node->key);
+  if(comparison == 0) {
+    return 1;
+  } else if(comparison < 0) {
+    if(node->left)
+      return __tree_set_contains_helper(set, node->left, key);
+
+    return 0;
+  } else {
+    if(node->right)
+      return __tree_set_contains_helper(set, node->right, key);
+
+    return 0;
+  }
+}
+
+static int32_t __tree_set_contains(tree_set_wrapper_s* set, void* key) {
+  if(!set->__root)
+    return 0;
+
+  return __tree_set_contains_helper(set, set->__root, key);
+}
+
+int32_t tree_set_contains(tree_set_s* set, void* key) {
+  if(!set) {
+    LOGE("treeset: error: cannot search in a null tree set\n");
+    return 0;
+  }
+
+  if(!key) {
+    LOGE("treeset: error: cannot search for a null key in tree set\n");
+    return 0;
+  }
+
+  return __tree_set_contains(AS_WRAPPER(set), key);
+}
+
+
 static int32_t __tree_set_insert_helper(
   tree_set_wrapper_s* set,
   tree_set_node_s* root,
@@ -288,48 +331,6 @@ int32_t tree_set_delete(tree_set_s* set, void* key) {
     set->size--;
 
   return deleted;
-}
-
-static int32_t __tree_set_contains_helper(
-  tree_set_wrapper_s* set,
-  tree_set_node_s* node,
-  void* key
-) {
-  int32_t comparison = set->__key_comp(key, node->key);
-  if(comparison == 0) {
-    return 1;
-  } else if(comparison < 0) {
-    if(node->left)
-      return __tree_set_contains_helper(set, node->left, key);
-
-    return 0;
-  } else {
-    if(node->right)
-      return __tree_set_contains_helper(set, node->right, key);
-
-    return 0;
-  }
-}
-
-static int32_t __tree_set_contains(tree_set_wrapper_s* set, void* key) {
-  if(!set->__root)
-    return 0;
-
-  return __tree_set_contains_helper(set, set->__root, key);
-}
-
-int32_t tree_set_contains(tree_set_s* set, void* key) {
-  if(!set) {
-    LOGE("treeset: error: cannot search in a null tree set\n");
-    return 0;
-  }
-
-  if(!key) {
-    LOGE("treeset: error: cannot search for a null key in tree set\n");
-    return 0;
-  }
-
-  return __tree_set_contains(AS_WRAPPER(set), key);
 }
 
 void __tree_set_print_helper(
