@@ -17,6 +17,7 @@ typedef struct tree_set_wrapper {
   tree_set_s set;
 
   size_t __key_size;
+
   tree_set_node_s* __root;
   tree_set_key_comparator_f __key_comp;
   tree_set_key_allocator_f __key_allocator;
